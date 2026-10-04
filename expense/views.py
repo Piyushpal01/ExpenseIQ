@@ -1,14 +1,36 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from django.db import transaction
-from .serializers import ExpenseSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .models import Expense
+from .serializers import ExpenseSerializer
 from accounts.models import Account
 
 # Create your views here.
 class ExpenseViewSet(viewsets.ModelViewSet):
+    '''Check Notes for better understanding of Expense Model Logic & Recalibration'''
+    
     serializer_class = ExpenseSerializer
 
-    '''Check Notes for better understanding of Expense Model Logic & Recalibration'''
+    # Query Filter Backends
+    filter_backends = [
+        DjangoFilterBackend,        # for Exact / Field-based filtering
+        filters.SearchFilter,       # fot text search
+        filters.OrderingFilter,     # for sorting
+    ]
+
+    # Exact Match Filters: Filter records by specific fields
+    filterset_fields = ["account", "category", "date",]
+
+    # Text Search: Lookup keywords inside descriptions
+    search_fields = ["description",]
+
+    # Allowed Sort Fields: Fields users can explicitly sort by
+    ordering_fields = ["amount", "date", "created_at",]
+
+    # Default Ordering: Show newest entries first, if 2 incomes created at same date, then sort accordingly which is made newest first.
+    ordering = ["-date", "-created_at"]
+
 
     def get_queryset(self):
         """fetch only those expense records that belong to current logged-in user"""

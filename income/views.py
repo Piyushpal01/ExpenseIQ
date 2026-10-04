@@ -1,15 +1,34 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from django.db import transaction
-# from django_filters.rest_framework import De
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Income
-from accounts.models import Account
 from .serializers import IncomeSerializer
+from accounts.models import Account
 
 
 # Create your views here.
 class IncomeViewSet(viewsets.ModelViewSet):
     serializer_class = IncomeSerializer
+
+    # Query Filter Backends
+    filter_backends = [
+        DjangoFilterBackend,        # for Exact / Field-based filtering, (?account=3)
+        filters.SearchFilter,       # fot text search, (?search=food)
+        filters.OrderingFilter,     # for sorting, (?search=food)
+    ]
+
+    # Exact Match Filters: Filter records by specific fields
+    filterset_fields = ["account", "category", "date",]
+
+    # Text Search: Lookup keywords inside descriptions
+    search_fields = ["description",]
+
+    # Allowed Sort Fields: Fields users can explicitly sort by
+    ordering_fields = ["amount", "date", "created_at",]
+
+    # Default Ordering: Show newest entries first, if 2 incomes created at same date, then sort accordingly which is made newest first.
+    ordering = ["-date", "-created_at"]
 
     def get_queryset(self):
         """fetch only those income records that belong to current logged-in user"""

@@ -607,3 +607,38 @@ Agar kisi glitch ya miss hue transaction ki wajah se balance upar-neeche hai, to
 
 ### 17. Implement Search + Pagination + Filtering
 * For query filtering, better use package `django-filter`.
+* Hum manually type filtering nahi krre like this - `if request.query_params.get(...)`, 
+* **Instead:**
+  ```text
+  Client
+   ↓
+  Query Parameters
+     ↓
+  DRF Filter Backends
+     ├── DjangoFilterBackend
+     ├── SearchFilter
+     └── OrderingFilter
+     ↓
+  User-scoped QuerySet
+     ↓
+  Pagination
+     ↓
+  Response
+  ```
+  Ye industry-standard DRF approach hai aur React frontend ke liye bhi kaafi clean rahega.
+  
+1. **Core Concepts:**
+*   **Filtering:** Exact match targeting (e.g., "Give me only records for Account 3").
+*   **Searching:** Substring keyword lookup (e.g., "Find 'Rent' anywhere inside description").
+*   **Ordering:** Sorting records up or down based on values (e.g., Highest amount first).
+*   **Pagination:** Splitting massive lists into small chunks/pages to optimize network speed.
+
+2. **Hitting Api Requests**
+     | Target Goal | Appended URL Parameter Syntax |
+      | :--- | :--- |
+      | **Exact Filter** | `/api/income/?account=3` |
+      | **Multi Filter** | `/api/income/?account=3&category=4` |
+      | **Text Search** | `/api/income/?search=dinner` |
+      | **Sort Descending** | `/api/income/?ordering=-amount` |
+      | **Sort Multiple** | `/api/income/?ordering=-date,amount` |
+      | **Mix Everything** | `/api/income/?account=3&search=subway&ordering=-amount` |

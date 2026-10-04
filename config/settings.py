@@ -158,13 +158,11 @@ REST_FRAMEWORK = {
     # Implementing django-filter, so using it as default backend in drf
     # Django-filter Config
     'DEFAULT_FILTER_BACKENDS': (
-        # Exact / Field-based filtering
-        'django_filters.rest_framework.DjangoFilterBackend',
-        
-        'rest_framework.filters.SearchFilter',      # Text Search
-        'rest_framework.filters.OrderingFilter',    # Sorting
+        'django_filters.rest_framework.DjangoFilterBackend',    # Exact / Field-based filtering
+        'rest_framework.filters.SearchFilter',                  # Text Search
+        'rest_framework.filters.OrderingFilter',                # Sorting
     ),
-    'DEFAULT_PAGINATION_CLASSES': (
+    'DEFAULT_PAGINATION_CLASS': (
         'rest_framework.pagination.PageNumberPagination'    # divide API resposne into Pages
     ),
     'PAGE_SIZE': 10,
