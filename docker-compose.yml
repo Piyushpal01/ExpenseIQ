@@ -1,0 +1,34 @@
+services:
+  database:
+    image: postgres:18
+    container_name: expenseiq_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432" # running pgsql server at 5433, coz our local pgsql server is running at 5432, so to avoid conflic between them.
+    volumes:
+      - expenseiq_postgres_data:/var/lib/postgresql  
+  
+  # for viewing on web
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: expenseiq_pgadmin
+    restart: unless-stopped
+    environment:
+      # PGADMIN_DEFAULT_EMAIL: admin@expenseiq.com  # to login on web browsers
+      # PGADMIN_DEFAULT_PASSWORD: adminpassword
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80" # pgadmin default port 80 par hi chlta h container k andr
+    volumes:
+      - expenseiq_pgadmin_data:/var/lib/pgadmin  # to sync registered server inside pgadmin
+    depends_on:
+      - database
+
+volumes:
+  expenseiq_postgres_data:
+  expenseiq_pgadmin_data:
