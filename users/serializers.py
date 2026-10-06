@@ -1,5 +1,5 @@
 # Registering API, users and Logout Flow
-# Flow => data from frontend(email,pass,fname,lname) -> Field Validation(RegisterSerializer) -> Data Stripping(inside create() method, password get separated so that it cannot eb saved in plain text) -> Password Hashing(create_user method hash the password) -> Response
+# Flow => data from frontend(email,pass,fname,lname) -> Field Validation(RegisterSerializer) -> Data Stripping(inside create() method, password get separated so that it cannot be saved in plain text) -> Password Hashing(create_user method hash the password) -> Response
 
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenBlacklistSerializer
