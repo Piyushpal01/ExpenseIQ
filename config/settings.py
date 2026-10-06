@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'categories',
     'income',
     'expense',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -147,6 +148,7 @@ MAILERS = {
     },
 }
 
+# Global Setting for Authentication, Permission, Filtering & Pagination
 # Drf Simple-JWT config -> this make api by default protected
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
