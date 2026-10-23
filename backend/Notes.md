@@ -859,8 +859,34 @@ LEVEL 1 BACKEND        🟢 COMPLETE
 
 > "How dashboard aggregation works?"
 
-
-
+#### endpoint GET /api/dashboard/ ye JSON structure return karta hai:
+```python
+{
+  "total_income": "50000.00",
+  "total_expense": "12000.00",
+  "net_balance": "38000.00",
+  "total_account_balance": "58000.00",
+  "accounts": [
+    {
+      "id": 3,
+      "acc_name": "HDFC Bank",
+      "acc_type": "BANK",
+      "acc_balance": "58000.00"
+    }
+  ],
+  "recent_transactions": [
+    {
+      "type": "expense",
+      "id": 7,
+      "amount": "500.00",
+      "description": "Groceries",
+      "date": "2026-10-01",
+      "category": "Food",
+      "account": "HDFC Bank"
+    }
+  ]
+}
+```
 
 
 
