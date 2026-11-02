@@ -82,6 +82,9 @@ class DashboardView(APIView):
             "-created_at",
         )[:5]
 
+        # print("RECENT INCOME:", list(recent_income))    # print income object
+        # print("RECENT EXPENSE:", list(recent_expense))  # print expense object
+
         # Combine all transactions, sort dynamically, and slice down to final top 5 items
         '''
         # chain function groups all the iterables together and produces a single iterable as output
@@ -90,7 +93,10 @@ class DashboardView(APIView):
         '''
         transactions = sorted(
             chain(recent_income, recent_expense),
-            key=lambda transaction: (transaction.date,transaction.created_at),
+            key=lambda transaction: (
+                transaction.date,
+                transaction.created_at
+            ),
             reverse=True,
         )[:5]
 

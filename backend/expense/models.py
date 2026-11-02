@@ -24,7 +24,7 @@ class Expense(models.Model):
     description = models.TextField(blank=True)
     date = models.DateField()   # on which date expense was done
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         # latest entries first, like recent expense should show first, and if multiple expense done on same day then in that the latest expense should show(-created_at)

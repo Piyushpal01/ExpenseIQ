@@ -171,6 +171,13 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+
+    # token lifecycle & security management
+    # Token rotation is a feature & blacklist after rotation is security sub option, which only works when token rotation is true.
+    # This improves session security, but the frontend needs to save the new refresh token it gets on every refresh response.    client.js already handles this.
+
+    "ROTATE_REFRESH_TOKENS": True,  # issues new refresh token every time the access token is refreshed
+    "BLACKLIST_AFTER_ROTATION": True,   # prevents reuse by adding old refresh token to blacklist immediately
 }

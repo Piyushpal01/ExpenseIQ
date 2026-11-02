@@ -1,0 +1,1 @@
+// IncomeExpenseChart.jsx => Visualizing the monthly income vs. expense graph

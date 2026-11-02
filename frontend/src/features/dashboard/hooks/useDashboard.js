@@ -1,7 +1,7 @@
 /* This is file is for API request & data fetching for dashboard. */
 
 import { useQuery } from "@tanstack/react-query"
-import apiClient from "../../api/client"
+import apiClient from "../../../api/client"
 
 // fetch financial data / response from django dashboard endpoint
 async function fetchDashboard() {

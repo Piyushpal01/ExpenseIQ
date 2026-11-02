@@ -98,9 +98,18 @@ class IncomeViewSet(viewsets.ModelViewSet):
                 account.save(update_fields=['acc_balance'])
             else:
                 '''CASE-2: If account changed -> move amount between accounts'''
-                # Lock both old account and new account rows in db
-                old_account = Account.objects.select_for_update().get(id=old_account_id)
-                new_account = Account.objects.select_for_update().get(id=new_account_id)
+                # Implementing Concurrent account locking (prevents deadlock), instead of fetching first old account then transferring to new account
+                # 1. Locks both old & new account rows in a strict deterministic order(by ID)
+                locked_accounts = Account.objects.select_for_update().filter(
+                    id__in = [old_account_id, new_account_id]
+                ).order_by("id")
+
+                # 2. Map account instances to their IDs for easy access
+                accounts = {account.id: account for account in locked_accounts}
+
+                # 3. Extract the locked objects safely using keys
+                old_account = accounts[old_account_id]
+                new_account = accounts[new_account_id]
 
                 # Deduct the old income amount from the old account (reverting it), and add new income amount to the new account
                 old_account.acc_balance -= old_amount

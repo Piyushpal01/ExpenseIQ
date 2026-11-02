@@ -1,0 +1,5 @@
+Validi for 7 days 
+user-A
+{"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5NDI0ODQ0NSwiaWF0IjoxNzkzNjQzNjQ1LCJqdGkiOiI0MGQxNzVmOGEzMzU0MGY5ODAxNWJlOTczNTkxOGNmMyIsInVzZXJfaWQiOiI2In0.ltsgpjs7gfNXjbrhJ7Hd2vmmMFJeh790_bj6ebzxBHo"}
+
+USER-B

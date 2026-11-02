@@ -1,0 +1,23 @@
+ frontend/.gitignore                             |   24 [32m+[m
+ frontend/Notes.md                               |   97 [32m+[m
+ frontend/README.md                              |   16 [32m+[m
+ frontend/eslint.config.js                       |   21 [32m+[m
+ frontend/index.html                             |   13 [32m+[m
+ frontend/package-lock.json                      | 3430 [32m+++++++++++++++++++++++[m
+ frontend/package.json                           |   34 [32m+[m
+ frontend/public/favicon.svg                     |    1 [32m+[m
+ frontend/public/icons.svg                       |   24 [32m+[m
+ frontend/src/App.css                            |    1 [32m+[m
+ frontend/src/App.jsx                            |   24 [32m+[m
+ frontend/src/api/client.js                      |   34 [32m+[m
+ frontend/src/app/providers.jsx                  |   26 [32m+[m
+ frontend/src/features/auth/AuthContext.jsx      |   72 [32m+[m
+ frontend/src/features/dashboard/useDashboard.js |   30 [32m+[m
+ frontend/src/index.css                          |    1 [32m+[m
+ frontend/src/main.jsx                           |   19 [32m+[m
+ frontend/src/pages/Dashboard.jsx                |  784 [32m++++++[m
+ frontend/src/pages/LoginPage.jsx                |  212 [32m++[m
+ frontend/src/pages/RegisterPage.jsx             |  251 [32m++[m
+ frontend/src/routes/ProtectedRoutes.jsx         |   10 [32m+[m
+ frontend/vite.config.js                         |   19 [32m+[m
+ 22 files changed, 5143 insertions(+)

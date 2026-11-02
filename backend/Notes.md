@@ -888,9 +888,22 @@ LEVEL 1 BACKEND        🟢 COMPLETE
 }
 ```
 
+#### Net Cash Flow vs. Account Balance
 
+Example: jese **Net Cash Flow aur Account Balance dono ₹1,500 hain**, kyunki aapne zero balance se start kiya hai. Yeh values abhi same hain, par inka conceptual meaning bilkul alag hai.
+* **Key Differences**
 
+| Metric | Meaning | Time Sensitivity |
+| :--- | :--- | :--- |
+| **Net Cash Flow** | Selected period ki `Total Income − Total Expenses` | **Dynamic:** Period selector ke saath badlega. |
+| **Account Balance** | Accounts mein abhi available `Total Real-time Money` | **Static Snapshot:** Period selector badalne par nahi badlega. |
 
+* **Why Keep Them Separate? (Example Scenario)**
+  Agar aapke SBI account mein pehle se **₹5,000 opening balance** hota, toh dashboard par data aisa dikhta:
+  * **Net Cash Flow:** ₹1,500 *(Selected period ki performance)*
+  * **Account Balance:** ₹6,500 *(Actual available money: ₹5,000 + ₹1,500)*
+
+***Implementation Rule:** Dono ko dashboard par alag-alag cards mein dikhana zaroori hai kyunki yeh alag financial metrics ko represent karte hain.*
 
 ### 19. Frontend Design
 ```text
@@ -935,3 +948,9 @@ Financial recommendations
 RAG
 AI agents
 ```
+
+### 20. Added JWT Security Audit
+* ✅ Refresh token rotation
+* ✅ Old refresh token blacklist
+* ✅ New refresh token successfully usable
+* ✅ Access token + refresh token flow verified

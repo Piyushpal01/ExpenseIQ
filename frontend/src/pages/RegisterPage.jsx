@@ -62,8 +62,8 @@ function RegisterPage() {
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-12 text-slate-100">
       {/* Background Ambient Glow & Subtle Grid Pattern */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [bg-size:24px_24px] opacity-40" />
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[130px]" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-[420px] w-[420px] rounded-full bg-teal-500/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-130 w-130 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[130px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 h-105 w-105 rounded-full bg-teal-500/10 blur-[120px]" />
 
       <div className="relative z-10 w-full max-w-xl">
         {/* Brand Pill */}

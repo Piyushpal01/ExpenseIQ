@@ -67,8 +67,8 @@ class ExpenseViewSet(viewsets.ModelViewSet):
             # Fetch the OLD expense directly from the database, and lock this row for the duration of this transaction.
             # select_for_update() helps protect us from concurrent requests trying to modify the same expense at the same time.
             # So ultimately, it becomes concurrent-safe / deadlock-proof.
-
             # self.kwargs["pk"]: It fetches the ID directly from the URL and queries the database. e.g., User hits API (such as PUT /api/expenses/5/), Django extracts that ID (5) from the URL and places it into the view's self.kwargs dictionary under the key "pk".
+
             old_expense_object = Expense.objects.select_for_update().get(pk=self.kwargs["pk"])
 
             # Store the old values before saving new values(serialzier.save())
@@ -94,9 +94,20 @@ class ExpenseViewSet(viewsets.ModelViewSet):
                 account.save(update_fields=['acc_balance'])
             else:
                 '''CASE-2: If account changed -> move amount between accounts'''
-                # Lock both the old and new account rows
-                old_account = Account.objects.select_for_update().get(id=old_account_id)
-                new_account = Account.objects.select_for_update().get(id=new_account_id)
+                # Implementing Concurrent account locking (prevents deadlock), instead of fetching first old account then transferring to new account
+                # Locks both old & new account rows in a strict deterministic order(by ID)
+                locked_accounts = Account.objects.select_for_update().filter(
+                    id__in = [old_account_id, new_account_id]
+                ).order_by("id")
+
+                # Map account instances to their IDs for easy access, doing in traditional way instead we can do with dictionary comprehesion, check income
+                accounts = {}
+                for account in locked_accounts:
+                    accounts[account.id] = account
+
+                # 3. Extract the locked objects safely using keys
+                old_account = accounts[old_account_id]
+                new_account = accounts[new_account_id]
 
                 # Revert the old account by adding back the old expense amount, and deduct the new amount from the new account & save
                 old_account.acc_balance += old_amount
