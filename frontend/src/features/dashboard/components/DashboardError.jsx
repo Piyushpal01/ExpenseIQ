@@ -2,7 +2,10 @@
 // Error Screen on isError
 
 const DashboardError = ({ error, onRetry }) => {
-  const errorMessage = error?.response?.data?.detail || 'Please check your connection and try again.'
+  const apiMessage = error?.response?.data?.detail
+
+  // mking error message string safe
+  const errorMessage = typeof apiMessage === 'string' ? apiMessage : 'Please check your connection and try again.'
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-white">

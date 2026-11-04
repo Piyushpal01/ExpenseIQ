@@ -33,7 +33,7 @@ const AccountsOverview = ({ accounts = [] }) => {
                                     {account.acc_name}
                                 </p>
                                 <p className="mt-1 text-xs uppercase tracking-wider text-slate-400">
-                                    {account.acc_type.replaceAll('_', ' ')}
+                                    {account.acc_type?.replaceAll('_', ' ')}
                                 </p>
                             </div>
 

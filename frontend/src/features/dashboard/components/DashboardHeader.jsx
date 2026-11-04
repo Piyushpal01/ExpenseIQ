@@ -17,8 +17,9 @@ const DashboardHeader = ({ user, onLogout }) => {
                     Dashboard
                 </h1>
 
+                {/* show user's name, if there is no name, show email, else user */}
                 <p className="mt-1 text-sm font-medium text-slate-400">
-                    Welcome back, <span className="text-slate-200">{user?.email || 'User'}</span>
+                    Welcome back, <span className="text-slate-200">{user?.first_name || user?.email || 'User'}</span>
                 </p>
             </div>
 

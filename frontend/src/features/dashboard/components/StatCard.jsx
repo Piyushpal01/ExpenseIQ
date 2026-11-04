@@ -16,8 +16,6 @@ function getBadgeStyle(type) {
     }
 }
 
-import React from 'react'
-
 const StatCard = ({ title, amount, description, type = 'default', }) => {
     return (
         <article className="stat-card group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-slate-700/80 hover:shadow-xl hover:shadow-slate-950/50">

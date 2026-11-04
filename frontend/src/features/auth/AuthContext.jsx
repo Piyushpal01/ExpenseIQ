@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         let isMounted = true    // isMounted: Stops async state updates after provider unmount.
 
-        // restore the session after page reload
+        // Restore the session after page reload, implementing with session restoration logic
         async function restoreSession() {
             // get refresh token from session storage
             const savedRefreshToken = sessionStorage.getItem('refreshToken')
@@ -30,6 +30,7 @@ export function AuthProvider({ children }) {
             }
 
             try {
+                // Exchange the saved refresh token for a new access token.
                 const response = await apiClient.post('/auth/token/refresh/', {
                     refresh: savedRefreshToken,
                 })
@@ -38,6 +39,7 @@ export function AuthProvider({ children }) {
                     return
                 }
 
+                // Set the access token before making authenticated API requests.
                 setAccessToken(response.data.access)
 
                 // Save the rotated refresh token if the backend returns one.
@@ -45,11 +47,17 @@ export function AuthProvider({ children }) {
                 sessionStorage.setItem('refreshToken', newRefreshToken)
                 setRefreshToken(newRefreshToken)
 
-                setIsAuthenticated(true)
+                // Session restoration
+                // Fetch the authenticated user's actual profile.
+                const profileResponse = await apiClient.get('/users/profile/')
+                // console.log("profile response => ", profileResponse);
+                
 
-                // The refresh endpoint does not provide a user profile.
-                // A dedicated profile endpoint can be added later if needed.
-                setUser(null)
+                if(!isMounted) return
+                
+                // Restore user profile and authentication state, now since the endpoint provide the user data we can set it to profile
+                setUser(profileResponse.data)
+                setIsAuthenticated(true)
             }
             catch {
                 if(!isMounted) return

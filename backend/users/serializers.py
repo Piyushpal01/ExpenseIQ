@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenBlacklistSerializer
 from .models import User
 
+# serializer for registering users
 class RegisterSerializer(serializers.ModelSerializer):
     # Hide password in responses & enforcing minimum length of 8 chars
     password = serializers.CharField(write_only=True, min_length=8)
@@ -25,6 +26,13 @@ class RegisterSerializer(serializers.ModelSerializer):
             **validated_data,   # (**)Argument Unpacking => Unpacks the remaining fields (email, names) from dict
         )
         return user
+
+# serializers for user profile - for reading existing user information
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "email", "first_name", "last_name"]
+        read_only_fields = fields
 
 # Logout functionality
 class LogoutSerializer(TokenBlacklistSerializer):
