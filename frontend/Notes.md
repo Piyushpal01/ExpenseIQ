@@ -149,4 +149,17 @@ Income, expenses, balances, accounts aur transactions
    | Recent Transactions | Income + Expense records |
 
    *Net Cash Flow selected period ka income minus expense hoga. Total Account Balance current account balances ka snapshot hoga. Date filter change karne se ye change nahi hona chahiye.*
+
+3. **Building Account Management Module**
+   * Functionality
+     | Feature | Functionality |
+     | :--- | :--- |
+     | **Accounts List** | User ke saare accounts display |
+     | **Add Account** | Naya bank/cash/UPI account |
+     | **Edit Account** | Name aur account details update |
+     | **Deactivate Account** | Account ko inactive karna |
+     | **Balance Display** | Current account balance |
+     | **Empty State** | Account na hone par helpful UI |
+     | **Loading/Error** | Proper API states |
+   * Account Types => Bank, Cash, UPI, Card, other
    
