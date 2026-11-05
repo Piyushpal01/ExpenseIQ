@@ -54,14 +54,14 @@ const AccountCard = ({ account, onEdit }) => {
       <div className="mt-6 flex gap-3 opacity-100 transition-opacity duration-300">
         <button
           onClick={() => onEdit(account)}
-          className="flex-1 px-4 py-2 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-colors text-sm font-medium"
+          className="flex-1 px-4 py-2 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-colors text-sm font-medium cursor-pointer"
         >
           Edit
         </button>
         
         <button
           onClick={handleDeactivate}
-          className="flex-1 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-colors text-sm font-medium"
+          className="flex-1 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-colors text-sm font-medium cursor-pointer"
         >
           {deactivateMutation.isPending ? 'Wait...' : 'Deactivate'}
         </button>
