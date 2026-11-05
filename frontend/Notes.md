@@ -163,3 +163,30 @@ Income, expenses, balances, accounts aur transactions
      | **Loading/Error** | Proper API states |
    * Account Types => Bank, Cash, UPI, Card, other
    
+### Files and their implemented functionalities
+#### AccountForm.jsx
+- Add Account
+- Edit Account
+- Form validation
+- Account type selection
+- API error handling
+- Loading/submission state
+
+#### accountHelpers.js - keep reusable helpers
+- Account type labels.
+- Account icons.
+- Currency formatting.
+- Account-related display utilities. 
+
+#### AuthContext.jsx
+| Functionality | Status |
+| :--- | :--- |
+| Login with JWT | Implemented |
+| Register | Implemented |
+| Logout | Implemented |
+| Access token in memory | Implemented |
+| Refresh token in sessionStorage | Implemented |
+| Session restoration | Implemented |
+| User profile restoration | Implemented |
+| Session expiration event | Implemented |
+| Context value memoization | Implemented |

@@ -3,7 +3,7 @@
 import axios from 'axios'
 
 let accessToken = null
-let isRefreshing = null     // isRefreshing: Indicates whether a refresh request is already in progress.
+let isRefreshing = false     // isRefreshing: Indicates whether a refresh request is already in progress.
 let pendingRequests = []
 
 export function setAccessToken(token) {
@@ -20,7 +20,7 @@ function notifySessionExpired() {
 
 // Resolve or reject requests that are waiting for the current refresh attempt.
 function settlePendingRequests(error, token = null) {
-    pendingRequests.forEach(( resolve, reject ) => {
+    pendingRequests.forEach(({ resolve, reject }) => {
         if(error) {
             reject(error)
         } else {
@@ -122,7 +122,7 @@ apiClient.interceptors.response.use(
         }
         finally {
             // finally: Releases the lock regardless of whether the refresh attempt succeeds or fails.
-            isRefreshing = true
+            isRefreshing = false
         }
     },
 )

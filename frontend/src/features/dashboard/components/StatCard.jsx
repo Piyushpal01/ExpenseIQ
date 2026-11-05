@@ -1,6 +1,6 @@
 // StatCard.jsx => Creating reusable cards for income, expenses, and cash flow for dashboard
 
-import { formatCurrency } from "../utils/formatCurrency"
+import { formatCurrency } from "../../../utils/formatCurrency"
 
 // Badges - Income, Expense, Net-Balance, Account Balance
 function getBadgeStyle(type) {

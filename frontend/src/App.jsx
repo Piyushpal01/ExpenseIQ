@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import DashboardPage from "./pages/DashboardPage"
 import ProtectedRoute from "./routes/ProtectedRoutes"
+import AccountsPage from "./pages/AccountsPage"
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/accounts" element={<AccountsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,6 +1,6 @@
 // AccountsOverview.jsx => Displaying the user's connected accounts and their balances on dashboard
 
-import { formatCurrency } from "../utils/formatCurrency"
+import { formatCurrency } from "../../../utils/formatCurrency"
 
 const AccountsOverview = ({ accounts = [] }) => {
     console.log("Acc array => ", accounts)

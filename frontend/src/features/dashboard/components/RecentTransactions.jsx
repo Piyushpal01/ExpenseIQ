@@ -1,6 +1,6 @@
 // RecentTransactions => Listing the latest 5 transactions on dashboard
 
-import { formatCurrency } from "../utils/formatCurrency"
+import { formatCurrency } from "../../../utils/formatCurrency"
 
 const RecentTransactions = ({ recent_transactions = [] }) => {
     console.log("transactions = ", recent_transactions)
