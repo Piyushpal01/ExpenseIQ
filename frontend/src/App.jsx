@@ -4,6 +4,7 @@ import RegisterPage from "./pages/RegisterPage"
 import DashboardPage from "./pages/DashboardPage"
 import ProtectedRoute from "./routes/ProtectedRoutes"
 import AccountsPage from "./pages/AccountsPage"
+import CategoriesPage from "./pages/CategoriesPage"
 
 function App() {
 
@@ -16,8 +17,10 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/accounts" element={<AccountsPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
       </Route>
 
+      {/*if use enters any wrong url, send back to root */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

@@ -16,7 +16,6 @@ const accountForm = ({ initialData = null, onSuccess, onCancel }) => {
     const [formData, setFormData] = useState({
         acc_name: '',
         acc_type: 'BANK',
-        acc_balance: '',
     })
 
     // pre-fill form fields if in edit mode
@@ -25,7 +24,6 @@ const accountForm = ({ initialData = null, onSuccess, onCancel }) => {
             setFormData({
                 acc_name: initialData.acc_name,
                 acc_type: initialData.acc_type,
-                acc_balance: initialData.acc_balance,
             })
         }
     }, [initialData])
@@ -94,21 +92,6 @@ const accountForm = ({ initialData = null, onSuccess, onCancel }) => {
                             </option>
                         ))}
                     </select>
-                </div>
-
-                {/* Account Balance Field */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">Current Balance (₹)</label>
-                    <input
-                        type="number"
-                        name="acc_balance"
-                        required
-                        step="0.01"
-                        value={formData.acc_balance}
-                        onChange={handleChange}
-                        placeholder="0.00"
-                        className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                    />
                 </div>
 
                 {/* Action Buttons */}
