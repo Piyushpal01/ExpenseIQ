@@ -1,5 +1,4 @@
 // Main Categories dashboard that handles the list, search, filters, and modal
-
 // Component: Categories ka main dashboard jo list, search, filters aur modal handle karta hai
 
 import { useEffect, useRef, useState } from 'react';

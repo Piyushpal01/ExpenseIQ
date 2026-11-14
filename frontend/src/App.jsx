@@ -1,10 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom"
+
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import DashboardPage from "./pages/DashboardPage"
 import ProtectedRoute from "./routes/ProtectedRoutes"
 import AccountsPage from "./pages/AccountsPage"
 import CategoriesPage from "./pages/CategoriesPage"
+import IncomePage from "./pages/IncomePage"
 
 function App() {
 
@@ -18,6 +20,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/accounts" element={<AccountsPage />} />
         <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/income" element={<IncomePage />} />
       </Route>
 
       {/*if use enters any wrong url, send back to root */}

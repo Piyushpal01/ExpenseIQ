@@ -14,7 +14,7 @@ const CategoryForm = ({ initialData = null, onSuccess, onCancel }) => {
     // Form state (only name and category_type are required)
     const [formData, setFormData] = useState({ category_name: '', category_type: 'DEFAULT', }) // Default for fallback
 
-    // Pre-Populate form fields if in edit mode
+    // populate form fields if in edit mode
     useEffect(() => {
         if (initialData) {
             setFormData({

@@ -190,3 +190,12 @@ Income, expenses, balances, accounts aur transactions
 | User profile restoration | Implemented |
 | Session expiration event | Implemented |
 | Context value memoization | Implemented |
+
+> Phase 1 to 4(F4) completed
+
+### Phase F5(Income Management UI)
+* Is phase mein humein mainly 3 cheezein karni hain:
+  * **API Hooks (hooks/useIncome.js):** TanStack Query hooks banayenge backend se income fetch, add, edit aur delete karne ke liye.
+  * **Income Form/Modal:** Nayi income add karne ka UI (amount, date, kis account mein paisa aaya, aur kaunsi category hai).
+  * **Income List:** Saari historical income entries ko display karna.
+* **Design Flow:** `useIncome -> incomeForm -> `
