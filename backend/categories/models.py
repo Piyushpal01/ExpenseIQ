@@ -13,7 +13,9 @@ class Category(models.Model):
     category_name = models.CharField(max_length=100)
     category_type = models.CharField(max_length=12, choices=CategoryType.choices)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)    
+    # Adding is_active field for soft deletion of category, instead of hard delete
+    is_active = models.BooleanField(default=True)
 
     # Meta settings: To control database rules and custom behaviors
     class Meta:
@@ -27,6 +29,6 @@ class Category(models.Model):
             )
         ]
 
-    # returning category name with its type - e.g., "food (expense)"
+    # Returning category name with its type - e.g., "food (expense)"
     def __str__(self):
         return f"{self.category_name} ({self.category_type})"
