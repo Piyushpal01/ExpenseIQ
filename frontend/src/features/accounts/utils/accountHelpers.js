@@ -13,7 +13,7 @@ const ACCOUNT_TYPES = {
         label: "Cash",
         icon: "💵",
     },
-     UPI: {
+    UPI: {
         label: "UPI",
         icon: "📱",
     },
@@ -34,5 +34,5 @@ export function getAccountTypeInfo(type) {
 
 // Transforms the mapping object into a key-value array format for dropdown selects and filters
 export const accountTypeOptions = Object.entries(ACCOUNT_TYPES).map(
-    ([ value, {label} ]) => ({ value, label })
+    ([value, { label }]) => ({ value, label })
 )

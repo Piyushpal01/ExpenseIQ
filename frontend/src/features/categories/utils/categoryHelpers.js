@@ -27,5 +27,5 @@ export const CATEGORY_TYPES = {
 
 // Returns style config for a given category type, falling back to EXPENSE if invalid
 export const getCategoryStyle = (type) => {
-    return CATEGORY_TYPES[type] || CATEGORY_TYPES.DEFAULT    
+    return CATEGORY_TYPES[type] || CATEGORY_TYPES.DEFAULT
 }

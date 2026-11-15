@@ -4,8 +4,6 @@ import { useDeleteCategory } from "../hooks/useCategories"
 import { getCategoryStyle } from "../utils/categoryHelpers"
 
 const CategoryCard = ({ category, onEdit }) => {
-    // console.log(category)
-
     // Whatever category type comes from backend, making it to uppercase to match with out cat type
     const catType = (category.category_type || '').toUpperCase()
 

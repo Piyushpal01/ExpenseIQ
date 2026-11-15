@@ -16,7 +16,7 @@ const AccountCard = ({ account, onEdit }) => {
 
   // confirmation before deactivation
   const handleDeactivate = () => {
-    if(window.confirm(`Are you sure you want to deactivate ${account.acc_name}?`)) {
+    if (window.confirm(`Are you sure you want to deactivate ${account.acc_name}?`)) {
       deactivateMutation.mutate(account.id)
     }
   }
@@ -24,7 +24,7 @@ const AccountCard = ({ account, onEdit }) => {
   return (
     <div className="relative group p-6 rounded-2xl bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]">
       <div className="flex justify-between items-start mb-4">
-        
+
         <div className="flex items-center gap-3">
           <span className="text-3xl bg-gray-800/80 p-3 rounded-xl border border-gray-700">
             {getAccountIcon(account.acc_type)}
@@ -58,7 +58,7 @@ const AccountCard = ({ account, onEdit }) => {
         >
           Edit
         </button>
-        
+
         <button
           onClick={handleDeactivate}
           className="flex-1 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-colors text-sm font-medium cursor-pointer"

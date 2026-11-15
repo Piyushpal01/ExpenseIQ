@@ -1,14 +1,15 @@
 // Hooks for Income CRUD operations, using Tanstack query
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import api from "../../../api/client"
+import apiClient from "../../../api/client"
 
 // Global query key
 export const IncomeQueryKey = ["income"]
 
 // fetch all income records
 async function fetchIncomes() {
-    const response = await api.get('/income/')
+    const response = await apiClient.get('/income/')
+    
     // DRF pagination check
     return Array.isArray(response.data)
     ? response.data
@@ -17,19 +18,22 @@ async function fetchIncomes() {
 
 // create new income
 async function createIncome(incomeData) {
-    const response = await api.post('/income/', incomeData)
+    const response = await apiClient.post('/income/', incomeData)
+    // console.log("data sent from fronted -> ", incomeData);
+    // console.log("Received response data -> ", response.data);
+    
     return response.data
 }
 
 // update income
 async function updateIncome({id, incomeData}) {
-    const response = await api.patch(`/income/${id}/`, incomeData)
+    const response = await apiClient.patch(`/income/${id}/`, incomeData)
     return response.data
 }
 
 // delete income(hard delete)
 async function deleteIncome(id) {
-    const response = await api.delete(`/income/${id}/`)
+    const response = await apiClient.delete(`/income/${id}/`)
     return response.data
 }
 

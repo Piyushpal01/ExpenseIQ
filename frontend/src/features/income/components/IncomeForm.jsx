@@ -1,11 +1,11 @@
 // Form for creating / editing income entriies. Fetches & displays active accounts & income categories in dropdown
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useCreateIncome, useUpdateIncome } from "../hooks/useIncome"
 import { useAccounts } from "../../accounts/hooks/useAccounts"
 import { useCategories } from "../../categories/hooks/useCategories"
 
-const IncomeForm = ({ initialData=null, onSuccess, onCancel }) => {
+const IncomeForm = ({ initialData = null, onSuccess, onCancel }) => {
     const isEditMode = Boolean(initialData)
 
     // Load mutations
@@ -13,59 +13,58 @@ const IncomeForm = ({ initialData=null, onSuccess, onCancel }) => {
     const updateMutation = useUpdateIncome()
 
     // Fetch data for dropdown
-    const { data: accounts = [] } = useAccounts()
+    const { data: allAccounts = [] } = useAccounts()
     const { data: allCategories = [] } = useCategories()
 
-    // Filter categories only having type 'INCOME'
-    const incomeCategories = allCategories.filter(cat => (
-        (cat.category_type || '').toUpperCase() === "INCOME"
-    ))
+    // Filter categories having type 'INCOME', using useMemo to fix infinite loop of re-rendering
+    const incomeCategories = useMemo(() => {
+        return allCategories.filter(cat =>
+            (cat.category_type || '').toUpperCase() === "INCOME"
+        )
+    }, [allCategories])
 
     // Form state
     const [formData, setFormData] = useState({
         amount: '',
         description: '',
-        transaction_date: new Date().toISOString().split('T')[0], // by default current date
+        date: new Date().toISOString().split('T')[0], // by default current date
         account: '',    // Account id
         category: '',   // category id
     })
 
-    // populate form data for Edit Mode(used || operator to avoid uncontrolled input error)
+    // populate form data for Edit Mode(used || operator to avoid uncontrolled input error) else show the form for creating new income
     useEffect(() => {
-        if(initialData) {
+        // for edit mode
+        if (initialData) {
             setFormData({
                 amount: initialData.amount || '',
                 description: initialData.description || '',
-                transaction_date: initialData.transaction_date || new Date().toISOString().split('T')[0],
+                date: initialData.date || new Date().toISOString().split('T')[0],
                 account: initialData.account || '',
                 category: initialData.category || '',
             })
         }
-        else if(accounts.length > 0 && incomeCategories.length > 0) {
-            // before creating new account, first select default account & category
-            setFormData(prev => ({
-                ...prev, account: accounts[0].id, category: incomeCategories[0].id
-            }))
-        }
-    }, [initialData, accounts, incomeCategories])
+    }, [initialData, allAccounts, incomeCategories])
 
     const handleChange = (e) => {
         const { name, value } = e.target
-        setFormData((prev) => ({...prev, [name]: value}))
+        setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        // ensure that amount is in number
-        const payload = {...formData, amount: parseFloat(formData.amount)}
+        // since amount might come in string from backend, parseFloat it converts into decimal number
+        const payload = { ...formData, amount: parseFloat(formData.amount) }
 
-        if(isEditMode) {
+        if (isEditMode) {
+            // api call for updating existing income 
             updateMutation.mutate(
-                { id: initialData, incomeData: payload },
+                { id: initialData.id, incomeData: payload },
                 { onSuccess: () => onSuccess && onSuccess() }
             )
         } else {
+            // api call for creating new income
             createMutation.mutate(payload, {
                 onSuccess: () => onSuccess && onSuccess()
             })
@@ -116,9 +115,9 @@ const IncomeForm = ({ initialData=null, onSuccess, onCancel }) => {
                     <label className="block text-sm font-medium text-gray-400 mb-1">Date</label>
                     <input
                         type="date"
-                        name="transaction_date"
+                        name="date"
                         required
-                        value={formData.transaction_date}
+                        value={formData.date}
                         onChange={handleChange}
                         className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 transition-colors scheme-dark"
                     />
@@ -133,11 +132,11 @@ const IncomeForm = ({ initialData=null, onSuccess, onCancel }) => {
                             required
                             value={formData.account}
                             onChange={handleChange}
-                            className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 transition-colors appearance-none cursor-pointer"    
+                            className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 transition-colors appearance-none cursor-pointer"
                         >
                             <option value="" disabled>Select Account</option>
-                            {accounts.map(acc => (
-                                <option key={acc.id} value={acc.id}>{acc.account_name}</option>
+                            {allAccounts.map(acc => (
+                                <option key={acc.id} value={acc.id}>{acc.acc_name}</option>
                             ))}
                         </select>
                     </div>

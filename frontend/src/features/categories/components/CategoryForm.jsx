@@ -41,8 +41,8 @@ const CategoryForm = ({ initialData = null, onSuccess, onCancel }) => {
                 // first onSuccess is tanstack query's event listener and second onSuccess() is our component prop
             )
         } else {
-            createMutation.mutate(formData, { 
-                onSuccess: () => onSuccess && onSuccess() 
+            createMutation.mutate(formData, {
+                onSuccess: () => onSuccess && onSuccess()
             })
         }
     }

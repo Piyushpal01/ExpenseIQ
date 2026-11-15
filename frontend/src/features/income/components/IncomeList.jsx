@@ -6,13 +6,13 @@ import IncomeError from "./IncomeError"
 
 const IncomeList = ({ incomes, isPending, isError, error, onEdit, refetch }) => {
     // if income is in loadin state, render incomeSkeleton
-    if(isPending) return <IncomeSkeleton />
-    
+    if (isPending) return <IncomeSkeleton />
+
     // if any error comes, render incomeError
-    if(isError) return <IncomeError />
+    if (isError) return <IncomeError />
 
     // if there are no records
-    if(!incomes?.length) {
+    if (!incomes?.length) {
         return (
             <div className="rounded-2xl border border-dashed border-gray-700 bg-gray-800/20 p-12 text-center">
                 <div className="text-4xl mb-4 opacity-50">💸</div>

@@ -1,9 +1,9 @@
-// skeleton loader for income list. Displays pulsing placeholders while income data is fetched
+// Skeleton loader for income list. Displays pulsing placeholders while income data is fetched
 
 const IncomeSkeleton = () => {
     return (
         <div className="flex flex-col gap-3">
-            {[1,2,3,4].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-gray-900/20 border border-gray-800 animate-pulse">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-gray-800"></div>

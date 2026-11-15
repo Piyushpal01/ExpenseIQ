@@ -27,7 +27,6 @@ const IncomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingIncome, setEditingIncome] = useState(null)
 
-    // calculate total income amount
     const validIncomes = Array.isArray(rawIncomes) ? rawIncomes : []    
 
     // mapping account name, category name with strict type coercion just in case as in income we receive only id so using that we are mapping that id account name and category and date also.
@@ -40,7 +39,6 @@ const IncomePage = () => {
             ...income, 
             account_name: accountMatch ? accountMatch.acc_name : 'Unknown Account',
             category_name: categoryMatch ? categoryMatch.category_name : 'Unknown Category',
-            transaction_date: income.date
         }
     })
 
@@ -77,16 +75,19 @@ const IncomePage = () => {
         }
     }, [isPending, enrichedIncomes.length])
 
+    // modal form pop up for add income, here form will open, but no in edit mode, so initial data that will be sent to income form will be null
     const openModalForCreate = () => {
         setEditingIncome(null)
         setIsModalOpen(true)
     }
 
+    // edit form handler
     const handleEdit = (income) => {
         setEditingIncome(income)
         setIsModalOpen(true)
     }
 
+    // close modal form hadnler
     const closeModal = () => {
         setIsModalOpen(false)
         setTimeout(() => {

@@ -23,7 +23,7 @@ const IncomeCard = ({ income, onEdit }) => {
                 <div>
                     <h3 className="text-gray-200 font-medium">{income.description}</h3>
                     <p className="text-xs text-gray-500 mt-0.5 tracking-wide">
-                        {income.category_name} • {income.account_name} • {new Date(income.transaction_date).toLocaleDateString()}
+                        {income.category_name} • {income.account_name} • {new Date(income.date).toLocaleDateString()}
                     </p>
                 </div>
             </div>

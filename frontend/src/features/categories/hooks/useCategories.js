@@ -20,7 +20,7 @@ async function fetchCategories() {
 // 2. Create category
 async function createCategory(categoryData) {
     const response = await apiClient.post('/categories/', categoryData)
-    console.log(response)
+    // console.log(response)
     return response.data
 }
 

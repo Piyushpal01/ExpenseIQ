@@ -7,12 +7,12 @@ const AccountList = ({ accounts, isPending, isError, error, refetch, onEdit }) =
     // handle loading
     if (isPending) {
         return <AccountSkeleton />
-    } 
+    }
 
     // handle error
     if (isError) {
         return <AccountError error={error} onRetry={refetch} />
-    } 
+    }
 
     // only filter activated accounts
     const activeAccounts = accounts.filter(acc => acc.is_active !== false);

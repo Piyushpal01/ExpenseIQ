@@ -19,7 +19,7 @@ const AccountSkeleton = () => {
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Balance Placeholder */}
                     <div className="mt-8 space-y-2">
                         <div className="h-3 w-20 bg-gray-700/50 rounded"></div>
