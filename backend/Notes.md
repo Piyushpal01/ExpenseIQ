@@ -905,6 +905,13 @@ Example: jese **Net Cash Flow aur Account Balance dono ₹1,500 hain**, kyunki a
 
 ***Implementation Rule:** Dono ko dashboard par alag-alag cards mein dikhana zaroori hai kyunki yeh alag financial metrics ko represent karte hain.*
 
+### Industry Standard for Soft Delte vs Hard Delete
+| Delete Strategy | Entities (Tables / Models) | Kyun? (Industry Standard Logic) |
+| :--- | :--- | :--- |
+| **Soft Delete** (`is_active=False`) | **Master Data:**<br>• Accounts<br>• Categories<br>• Users | In par doosra data (transactions) depend karta hai. Hard delete karne se purana hisaab aur foreign keys toot jayenge. |
+| **Hard Delete** *(with Balance Reversal)* | **Transactional Data:**<br>• Income<br>• Expenses<br>• Transfers | Personal finance apps mein galti se hui entries ko permanently hatane aur DB clean rakhne ke liye (saath mein account balance reverse karke). |
+
+
 ### 19. Frontend Design
 ```text
 React

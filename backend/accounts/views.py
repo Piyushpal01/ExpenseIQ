@@ -13,11 +13,11 @@ class AccountViewSet(viewsets.ModelViewSet):
         """
         MANDATORY NAME(get_queryset): Pre-defined hook inside DRF. The name has to be this only.
         PURPOSE: Isolates user data. Ensures users can only view their own accounts.
-        Fetch only those accounts that belong to the logged-in user. 
+        Fetch only those accounts that belong to the logged-in user and is currently active. 
         self.request.user gives you the currently logged-in (authenticated) user.
         Filters the Account table so that User A can never access User B's financial data
         """
-        return Account.objects.filter(user=self.request.user)
+        return Account.objects.filter(user=self.request.user, is_active=True)
 
     def perform_create(self, serializer):
         """

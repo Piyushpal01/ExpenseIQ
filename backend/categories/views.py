@@ -8,7 +8,7 @@ class CategoryViewset(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
 
     def get_queryset(self):
-        # Return only the only active categories of the currently logged-in user.
+        # Return only the only active categories of the currently logged-in user with current active account.
         # User A cannot see User B's categories. This ensures strict user isolation, Called USER ISOLATION TECHNIQUE
         return Category.objects.filter(user=self.request.user, is_active=True)
 
