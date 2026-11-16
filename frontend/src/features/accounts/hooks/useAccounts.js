@@ -1,4 +1,4 @@
-// all account API operations.
+// All account API operations.
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import apiClient from "../../../api/client"

@@ -1,7 +1,7 @@
 // DashboardHeader.jsx => Displaying the welcome message, date, and period selector
 
 const DashboardHeader = ({ user, onLogout }) => {
-    console.log(user)
+    // console.log(user)
     return (
         <header className="dash-header flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/60 pb-6">
             <div>

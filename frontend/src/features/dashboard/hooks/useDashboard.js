@@ -3,12 +3,11 @@
 import { useQuery } from "@tanstack/react-query"
 import apiClient from "../../../api/client"
 
-// fetch financial data / response from django dashboard endpoint
+// Fetch financial data / response from django dashboard endpoint
 async function fetchDashboard() {
-    // get req fetch the authenticated user data
     const response = await apiClient.get('/dashboard/')
-
-    // Axios resposne
+    console.log(response.data);
+    
     return response.data
 }
 

@@ -191,6 +191,16 @@ Income, expenses, balances, accounts aur transactions
 | Session expiration event | Implemented |
 | Context value memoization | Implemented |
 
+### Code Analysis & Minor Suggestions:
+1. `useDashboard.js`: Perfect hai. Single API call se saara dashboard data fetch ho raha hai.
+2. `AccountsOverview.jsx`: Clean and simple. Bas currency formatting achhi tarah ki hui hai.
+3. `DashboardError.jsx`: User-friendly error UI. Badhiya.
+4. `DashboardHeader.jsx`: Good logic, email fallback ke sath user name dikhana.
+5. `DashboardSkeleton.jsx`: Layout maintaining skeleton. Top tier!
+6. `FinancialOverview.jsx`: 4 StatCards wrap kiye hain. Data parsing sahi hai.
+7. `RecentTransactions.jsx`: Color coding for income/expense. Mast.
+8. `StatCard.jsx`: Custom badge styling according to type.
+
 > Phase 1 to 4(F4) completed
 
 ### Phase F5(Income Management UI)
@@ -198,11 +208,19 @@ Income, expenses, balances, accounts aur transactions
   * **API Hooks (hooks/useIncome.js):** TanStack Query hooks banayenge backend se income fetch, add, edit aur delete karne ke liye.
   * **Income Form/Modal:** Nayi income add karne ka UI (amount, date, kis account mein paisa aaya, aur kaunsi category hai).
   * **Income List:** Saari historical income entries ko display karna.
-* **Design Flow:** `income/hooks/useIncome -> income/components/ => incomeForm ->  `
+* **Design Flow:** `income/hooks/useIncome -> income/components/ => skeleton, error, card, list, Form -> pages/incomePage  `
 
 ### Phase F6 (Expense Management UI)
 * Is phase mein humein mainly 3 cheezein karni hain:
   * **API Hooks (hooks/useExpense.js):** TanStack Query hooks backend se expense data fetch, add, edit aur delete karne ke liye (Ye humne pichle step mein complete kar liya hai).
   * **Expense Components & Form:** Skeleton, Error, List, Card, aur Modal Form banana. Isme hum Income wale green (emerald) theme ki jagah kharche wala red (rose/red) theme use karenge.
   * **Expense Page (Dashboard):** Saari historical expense entries ko GSAP animations ke sath display karna aur Frontend Mapping (Account aur Category ID se unka naam nikalna) implement karna.
-* **Design Flow:** `income/hooks/useIncome -> income/components/ => incomeForm ->  `
+* **Design Flow:** `expense/hooks/useIncome -> expense/components/ => skeleton, error, card, list, Form -> pages/expensePage  `
+
+### Phase F7 (Dashboard & Analytics)
+* Is phase mein humein mainly 3 cheezein karni hain:
+  * **Summary Cards (Top Level):** TanStack Query hooks backend se expense data fetch, add, edit aur delete karne ke liye (Ye humne pichle step mein complete kar liya hai).
+  * **Visual Analytics (Charts):** Data ko visualize karne ke liye pie-chart ya bar-graph (is ke liye hum `recharts` library use karenge kyunki wo React ke sath best aur sabse fast kaam karti hai).
+  * **Recent Transactions:** Income aur Expense arrays ko merge karke, date ke hisaab se sort karke, latest 5 transactions ki ek list dikhana.
+* **Design Flow:** `expense/hooks/useIncome -> expense/components/ => skeleton, error, card, list, Form -> pages/expensePage  `
+

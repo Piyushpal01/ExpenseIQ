@@ -4,7 +4,7 @@
 import StatCard from './StatCard'
 
 const FinancialOverview = ({ data }) => {
-    console.log("data => ", data);
+    // console.log("data => ", data);
 
     return (
         <section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

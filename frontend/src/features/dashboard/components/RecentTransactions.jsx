@@ -3,7 +3,7 @@
 import { formatCurrency } from "../../../utils/formatCurrency"
 
 const RecentTransactions = ({ recent_transactions = [] }) => {
-    console.log("transactions = ", recent_transactions)
+    // console.log("transactions = ", recent_transactions)
 
     return (
         <div className="content-panel rounded-2xl border border-slate-800/80 bg-slate-900/60 p-6 backdrop-blur-md">
