@@ -21,6 +21,6 @@ class UserProfileView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
-    print("data: ", serializer_class.data)
+    # print("data: ", serializer_class.data)
     def get_object(self):
         return self.request.user
