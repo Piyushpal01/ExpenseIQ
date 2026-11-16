@@ -199,3 +199,10 @@ Income, expenses, balances, accounts aur transactions
   * **Income Form/Modal:** Nayi income add karne ka UI (amount, date, kis account mein paisa aaya, aur kaunsi category hai).
   * **Income List:** Saari historical income entries ko display karna.
 * **Design Flow:** `income/hooks/useIncome -> income/components/ => incomeForm ->  `
+
+### Phase F6 (Expense Management UI)
+* Is phase mein humein mainly 3 cheezein karni hain:
+  * **API Hooks (hooks/useExpense.js):** TanStack Query hooks backend se expense data fetch, add, edit aur delete karne ke liye (Ye humne pichle step mein complete kar liya hai).
+  * **Expense Components & Form:** Skeleton, Error, List, Card, aur Modal Form banana. Isme hum Income wale green (emerald) theme ki jagah kharche wala red (rose/red) theme use karenge.
+  * **Expense Page (Dashboard):** Saari historical expense entries ko GSAP animations ke sath display karna aur Frontend Mapping (Account aur Category ID se unka naam nikalna) implement karna.
+* **Design Flow:** `income/hooks/useIncome -> income/components/ => incomeForm ->  `

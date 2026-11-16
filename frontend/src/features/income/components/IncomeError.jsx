@@ -1,4 +1,4 @@
-// Erro state component, displays API failure message and provide manual retry button
+// Error state component, displays API failure message and provide manual retry button
 
 const IncomeError = ({ error, onRetry }) => {
     return (

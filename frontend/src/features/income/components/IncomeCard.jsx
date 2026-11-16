@@ -34,7 +34,7 @@ const IncomeCard = ({ income, onEdit }) => {
                     +₹{parseFloat(income.amount).toFixed(2)}
                 </span>
 
-                {/* Actions show on hover for cleaner UI */}
+                {/* Actions show on hover */}
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                         onClick={() => onEdit(income)}

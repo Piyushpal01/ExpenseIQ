@@ -5,7 +5,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
 import apiClient from "../../../api/client"
 
 // Global query key so that caching and invalidation happen properly
-export const categoryQueryKey = ["categories"]
+export const CategoryQueryKey = ["categories"]
 
 // 1. fetch categories
 async function fetchCategories() {
@@ -39,7 +39,7 @@ async function deleteCategory(id) {
 // Exporting Hooks
 export function useCategories() {
     return useQuery({
-        queryKey: categoryQueryKey,
+        queryKey: CategoryQueryKey,
         queryFn: fetchCategories,
     })
 }
@@ -53,7 +53,7 @@ export function useCreateCategory() {
         mutationFn: createCategory,
         onSuccess: () => {
             // Mark cached list as stale so useCategories auto-refetches fresh data
-            queryClient.invalidateQueries({ queryKey: categoryQueryKey })
+            queryClient.invalidateQueries({ queryKey: CategoryQueryKey })
         }
     })
 }
@@ -66,7 +66,7 @@ export function useUpdateCategory() {
         mutationFn: updateCategory,
         onSuccess: () => {
             // Auto-refresh cached categories to reflect updated changes
-            queryClient.invalidateQueries({ queryKey: categoryQueryKey })
+            queryClient.invalidateQueries({ queryKey: CategoryQueryKey })
         }  
     })
 }
@@ -79,7 +79,7 @@ export function useDeleteCategory() {
         mutationFn: deleteCategory,
         onSuccess: () => {
             // Remove deleted item from UI by refetching the list
-            queryClient.invalidateQueries({ queryKey: categoryQueryKey})
+            queryClient.invalidateQueries({ queryKey: CategoryQueryKey})
         }
     })
 }

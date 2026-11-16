@@ -6,7 +6,7 @@ import apiClient from "../../../api/client"
 // Global query key
 export const IncomeQueryKey = ["income"]
 
-// fetch all income records
+// Fetch all income records
 async function fetchIncomes() {
     const response = await apiClient.get('/income/')
     
@@ -16,7 +16,7 @@ async function fetchIncomes() {
     : response.data.results || []
 }
 
-// create new income
+// Create new income
 async function createIncome(incomeData) {
     const response = await apiClient.post('/income/', incomeData)
     // console.log("data sent from fronted -> ", incomeData);
@@ -25,13 +25,13 @@ async function createIncome(incomeData) {
     return response.data
 }
 
-// update income
-async function updateIncome({id, incomeData}) {
+// Update income
+async function updateIncome({ id, incomeData }) {
     const response = await apiClient.patch(`/income/${id}/`, incomeData)
     return response.data
 }
 
-// delete income(hard delete)
+// Delete income
 async function deleteIncome(id) {
     const response = await apiClient.delete(`/income/${id}/`)
     return response.data
@@ -39,7 +39,7 @@ async function deleteIncome(id) {
 
 // Custom hooks for performing above income CRUD operations
 
-// fetch income hook
+// Fetch income hook
 export function useIncome() {
     return useQuery({
         queryKey: IncomeQueryKey,
@@ -61,7 +61,7 @@ export function useCreateIncome() {
     })
 }
 
-// update income hook
+// Update income hook
 export function useUpdateIncome() {
     const queryClient = useQueryClient()
 
@@ -75,13 +75,14 @@ export function useUpdateIncome() {
     })
 }
 
-// delete income hook
+// Delete income hook
 export function useDeleteIncome() {
     const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: deleteIncome,
         onSuccess: () => {
+            // Balance will decrease when an income is deleted
             queryClient.invalidateQueries({queryKey: IncomeQueryKey})
             queryClient.invalidateQueries({queryKey: ["accounts"]}) // Balance will decrease
         }

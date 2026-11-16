@@ -29,10 +29,10 @@ const IncomeForm = ({ initialData = null, onSuccess, onCancel }) => {
         description: '',
         date: new Date().toISOString().split('T')[0], // by default current date
         account: '',    // Account id
-        category: '',   // category id
+        category: '',   // Category id
     })
 
-    // populate form data for Edit Mode(used || operator to avoid uncontrolled input error) else show the form for creating new income
+    // Populate form data for Edit Mode(used || operator to avoid uncontrolled input error) else show the form for creating new income
     useEffect(() => {
         // for edit mode
         if (initialData) {
@@ -54,7 +54,7 @@ const IncomeForm = ({ initialData = null, onSuccess, onCancel }) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        // since amount might come in string from backend, parseFloat it converts into decimal number
+        // Since amount might come in string from backend, parseFloat it converts into decimal number
         const payload = { ...formData, amount: parseFloat(formData.amount) }
 
         if (isEditMode) {

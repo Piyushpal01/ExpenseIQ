@@ -5,7 +5,7 @@ import IncomeSkeleton from "./IncomeSkeleton"
 import IncomeError from "./IncomeError"
 
 const IncomeList = ({ incomes, isPending, isError, error, onEdit, refetch }) => {
-    // if income is in loadin state, render incomeSkeleton
+    // if income is in loading state, render incomeSkeleton
     if (isPending) return <IncomeSkeleton />
 
     // if any error comes, render incomeError

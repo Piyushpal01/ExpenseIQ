@@ -12,9 +12,12 @@ const CategoryForm = ({ initialData = null, onSuccess, onCancel }) => {
     const updateMutation = useUpdateCategory()
 
     // Form state (only name and category_type are required)
-    const [formData, setFormData] = useState({ category_name: '', category_type: 'DEFAULT', }) // Default for fallback
+    const [formData, setFormData] = useState({
+        category_name: '', 
+        category_type: '', 
+    })
 
-    // populate form fields if in edit mode
+    // Populate form fields if in edit mode
     useEffect(() => {
         if (initialData) {
             setFormData({
@@ -81,6 +84,7 @@ const CategoryForm = ({ initialData = null, onSuccess, onCancel }) => {
                         onChange={handleChange}
                         className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer"
                     >
+                        <option value="" disabled>Select Category</option>
                         <option value="EXPENSE">Expense</option>
                         <option value="INCOME">Income</option>
                     </select>

@@ -18,7 +18,7 @@ const IncomePage = () => {
 
     // Filter to ONLY use INCOME categories for this page's mapping
     const incomeCategories = userCategories.filter(cat => 
-        (cat.category_type || '').toUpperCase() === 'INCOME'
+        (cat.category_type || '').toUpperCase() === "INCOME"
     )
 
     const pageRef = useRef()
@@ -29,7 +29,7 @@ const IncomePage = () => {
 
     const validIncomes = Array.isArray(rawIncomes) ? rawIncomes : []    
 
-    // mapping account name, category name with strict type coercion just in case as in income we receive only id so using that we are mapping that id account name and category and date also.
+    // Mapping account name, category name with strict type coercion just in case as in income we receive only id so using that we are mapping that id account name and category and date also.
     const enrichedIncomes = validIncomes.map(income => {
         // Use String() to ensure '7' (string) and 7 (number) match correctly
         const accountMatch = accounts.find(acc => acc.id === income.account)
@@ -43,7 +43,7 @@ const IncomePage = () => {
     })
 
 
-    // calculate toal income using enriched data 
+    // Calculate toal income using enriched data 
     const totalIncome = enrichedIncomes.reduce((sum, inc) => sum + parseFloat(inc.amount || 0), 0)
 
     // 1. Initial page loading animation for headers & toolbar
@@ -75,19 +75,19 @@ const IncomePage = () => {
         }
     }, [isPending, enrichedIncomes.length])
 
-    // modal form pop up for add income, here form will open, but no in edit mode, so initial data that will be sent to income form will be null
+    // Modal form pop up for add income, here form will open, but no in edit mode, so initial data that will be sent to income form will be null
     const openModalForCreate = () => {
         setEditingIncome(null)
         setIsModalOpen(true)
     }
 
-    // edit form handler
+    // Edit form handler
     const handleEdit = (income) => {
         setEditingIncome(income)
         setIsModalOpen(true)
     }
 
-    // close modal form hadnler
+    // Close modal form hadnler
     const closeModal = () => {
         setIsModalOpen(false)
         setTimeout(() => {
@@ -105,6 +105,7 @@ const IncomePage = () => {
                         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-emerald-400 to-teal-300">
                             Income
                         </h1>
+
                         <p className="mt-2 text-sm text-gray-400">
                             Track all your earning sources and incoming cash flows.
                         </p>
@@ -116,6 +117,7 @@ const IncomePage = () => {
                                 <p className="text-xs text-gray-400 font-medium mb-1">Total Income</p>
                                 <p className="text-2xl font-bold text-emerald-400">₹{totalIncome.toFixed(2)}</p>
                             </div>
+                            
                             <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                             </div>

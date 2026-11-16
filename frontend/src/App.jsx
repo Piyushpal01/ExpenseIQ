@@ -7,6 +7,7 @@ import ProtectedRoute from "./routes/ProtectedRoutes"
 import AccountsPage from "./pages/AccountsPage"
 import CategoriesPage from "./pages/CategoriesPage"
 import IncomePage from "./pages/IncomePage"
+import ExpensePage from "./pages/ExpensePage"
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
         <Route path="/accounts" element={<AccountsPage />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/income" element={<IncomePage />} />
+        <Route path="/expense" element={<ExpensePage />} />
       </Route>
 
       {/*if use enters any wrong url, send back to root */}
