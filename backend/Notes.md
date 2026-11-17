@@ -911,6 +911,15 @@ Example: jese **Net Cash Flow aur Account Balance dono ₹1,500 hain**, kyunki a
 | **Soft Delete** (`is_active=False`) | **Master Data:**<br>• Accounts<br>• Categories<br>• Users | In par doosra data (transactions) depend karta hai. Hard delete karne se purana hisaab aur foreign keys toot jayenge. |
 | **Hard Delete** *(with Balance Reversal)* | **Transactional Data:**<br>• Income<br>• Expenses<br>• Transfers | Personal finance apps mein galti se hui entries ko permanently hatane aur DB clean rakhne ke liye (saath mein account balance reverse karke). |
 
+### F() expressions (from django.db.models import F) used in charts code in dashboard/views.py
+> Query: `Income.objects.filter(user=user).values(category_name=F("category__category_name")).annotate(amount=Sum("amount")).order_by("-amount")`
+* ***F()*** expression ka use kisi model field ki value ko directly database level par reference karne ya rename karne ke liye hota hai.
+* **Double underscore (__)** ka matlab hai aap ForeignKey relation ke through doosri table (Category) ke andar ja kar uska category_name field utha rahe hain.
+* **`category_name=F(...)`** likhne se result mein key ka naam lamba (category__category_name) aane ki jagah chhota aur saaf (category_name) ho jata hai.
+* **`.values(...)`**: Ye SQL ke GROUP BY ki tarah kaam karta hai. Ye Django ko bolta hai ki poora model object mat lao, bas har category_name ke hisaab se data ko group kar do.
+* **`Sum("amount")`** har group (yani har category) ke saare amount ko aapas mein jod deta hai.
+* **`.annotate()`**: ka kaam hai har group ke saath ek naya calculated field jod dena. Yahan aapne us naye field ka naam amount rakha hai jisme us category ka total sum store hoga.
+* **`.order_by("-amount")`**: Ye final result ko descending order mein sort karta hai. Minus (-) lagane ka matlab hai ki jis category ka total sabse zyada hai, wo chart mein sabse upar/pehle dikhegi.
 
 ### 19. Frontend Design
 ```text
