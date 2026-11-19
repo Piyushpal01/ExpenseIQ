@@ -3,8 +3,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useIncome } from "../features/income/hooks/useIncome"
-import { useAccounts } from "../features/accounts/hooks/useAccounts"
-import { useCategories } from "../features/categories/hooks/useCategories"
+// import { useAccounts } from "../features/accounts/hooks/useAccounts"
+// import { useCategories } from "../features/categories/hooks/useCategories"
 import IncomeList from "../features/income/components/IncomeList"
 import IncomeForm from "../features/income/components/IncomeForm"
 import Modal from "../components/ui/Modal"
@@ -13,13 +13,13 @@ import gsap from "gsap"
 const IncomePage = () => {
     // API fetch - income, accounts, categories
     const { data: rawIncomes = [], isPending, isError, error, refetch } = useIncome()
-    const { data: accounts = [] } = useAccounts()
-    const { data: userCategories = [] } = useCategories()
+    // const { data: accounts = [] } = useAccounts()
+    // const { data: userCategories = [] } = useCategories()
 
     // Filter to ONLY use INCOME categories for this page's mapping
-    const incomeCategories = userCategories.filter(cat => 
-        (cat.category_type || '').toUpperCase() === "INCOME"
-    )
+    // const incomeCategories = userCategories.filter(cat => 
+    //     (cat.category_type || '').toUpperCase() === "INCOME"
+    // )
 
     const pageRef = useRef()
 
@@ -27,24 +27,26 @@ const IncomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingIncome, setEditingIncome] = useState(null)
 
-    const validIncomes = Array.isArray(rawIncomes) ? rawIncomes : []    
+    const validIncomes = Array.isArray(rawIncomes) ? rawIncomes : []
 
     // Mapping account name, category name with strict type coercion just in case as in income we receive only id so using that we are mapping that id account name and category and date also.
-    const enrichedIncomes = validIncomes.map(income => {
-        // Use String() to ensure '7' (string) and 7 (number) match correctly
-        const accountMatch = accounts.find(acc => acc.id === income.account)
-        const categoryMatch = incomeCategories.find(cat => cat.id === income.category)
+    // const enrichedIncomes = validIncomes.map(income => {
+    //     // Use String() to ensure '7' (string) and 7 (number) match correctly
+    //     const accountMatch = accounts.find(acc => acc.id === income.account)
+    //     const categoryMatch = incomeCategories.find(cat => cat.id === income.category)
 
-        return {
-            ...income, 
-            account_name: accountMatch ? accountMatch.acc_name : 'Unknown Account',
-            category_name: categoryMatch ? categoryMatch.category_name : 'Unknown Category',
-        }
-    })
+    //     return {
+    //         ...income, 
+    //         account_name: accountMatch ? accountMatch.acc_name : 'Unknown Account',
+    //         category_name: categoryMatch ? categoryMatch.category_name : 'Unknown Category',
+    //     }
+    // })
 
 
     // Calculate toal income using enriched data 
-    const totalIncome = enrichedIncomes.reduce((sum, inc) => sum + parseFloat(inc.amount || 0), 0)
+    // const totalIncome = enrichedIncomes.reduce((sum, inc) => sum + parseFloat(inc.amount || 0), 0)
+
+    const totalIncome = validIncomes.reduce((sum, inc) => sum + parseFloat(inc.amount || 0), 0)
 
     // 1. Initial page loading animation for headers & toolbar
     useEffect(() => {
@@ -53,13 +55,13 @@ const IncomePage = () => {
                 { y: 20, opacity: 0 },
                 { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power2.out' }
             )
-        }, pageRef);
+        }, pageRef)
         return () => ctx.revert()
     }, [])
 
     // 2. List Stagger Animation (After data is fetched and rendered)
     useEffect(() => {
-        if (!isPending && enrichedIncomes.length > 0) {
+        if (!isPending && validIncomes.length > 0) {
             const ctx = gsap.context(() => {
                 setTimeout(() => {
                     const cards = document.querySelectorAll('.income-card-wrapper')
@@ -73,7 +75,7 @@ const IncomePage = () => {
             }, pageRef)
             return () => ctx.revert()
         }
-    }, [isPending, enrichedIncomes.length])
+    }, [isPending, validIncomes.length])
 
     // Modal form pop up for add income, here form will open, but no in edit mode, so initial data that will be sent to income form will be null
     const openModalForCreate = () => {
@@ -117,7 +119,7 @@ const IncomePage = () => {
                                 <p className="text-xs text-gray-400 font-medium mb-1">Total Income</p>
                                 <p className="text-2xl font-bold text-emerald-400">₹{totalIncome.toFixed(2)}</p>
                             </div>
-                            
+
                             <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                             </div>
@@ -139,7 +141,7 @@ const IncomePage = () => {
                 {/* Income List Component */}
                 <div className="mt-6">
                     <IncomeList
-                        incomes={enrichedIncomes}
+                        incomes={validIncomes}
                         isPending={isPending}
                         isError={isError}
                         error={error}

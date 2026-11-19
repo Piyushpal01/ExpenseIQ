@@ -3,23 +3,23 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useExpense } from "../features/expense/hooks/useExpense"
-import { useAccounts } from "../features/accounts/hooks/useAccounts"
-import { useCategories } from "../features/categories/hooks/useCategories"
+// import { useAccounts } from "../features/accounts/hooks/useAccounts"
+// import { useCategories } from "../features/categories/hooks/useCategories"
 import ExpenseList from "../features/expense/components/ExpenseList"
 import ExpenseForm from "../features/expense/components/ExpenseForm"
 import Modal from "../components/ui/Modal"
 import gsap from "gsap"
 
 const ExpensePage = () => {
-    // API fetch - expense, accounts, categories
+    // API fetch
     const { data: rawExpenses = [], isPending, isError, error, refetch } = useExpense()
-    const { data: accounts = [] } = useAccounts()
-    const { data: userCategories = [] } = useCategories()
-    
+    // const { data: accounts = [] } = useAccounts()
+    // const { data: userCategories = [] } = useCategories()
+
     // Filter to ONLY use EXPENSE categories for this page's mapping
-    const expenseCategories = userCategories.filter(cat =>
-        (cat.category_type || '').toUpperCase() === "EXPENSE"
-    )
+    // const expenseCategories = userCategories.filter(cat =>
+    //     (cat.category_type || '').toUpperCase() === "EXPENSE"
+    // )
 
     const pageRef = useRef()
 
@@ -30,20 +30,21 @@ const ExpensePage = () => {
     const validExpenses = Array.isArray(rawExpenses) ? rawExpenses : []
 
     // Mapping account and category IDs to their respective names
-    const enrichedExpenses = validExpenses.map(expense => {
-        const accountMatch = accounts.find(acc => String(acc.id) === String(expense.account))
-        const categoryMatch = expenseCategories.find(cat => String(cat.id) === String(expense.category))
+    // const enrichedExpenses = validExpenses.map(expense => {
+    //     const accountMatch = accounts.find(acc => String(acc.id) === String(expense.account))
+    //     const categoryMatch = expenseCategories.find(cat => String(cat.id) === String(expense.category))
 
-        // binding account name and category name in expense record for displaying in card
-        return {
-            ...expense,
-            account_name: accountMatch ? accountMatch.acc_name : 'Unknown Account',
-            category_name: categoryMatch ? categoryMatch.category_name : 'Unknown Category',
-        }
-    })
-    
+    //     // binding account name and category name in expense record for displaying in card
+    //     return {
+    //         ...expense,
+    //         account_name: accountMatch ? accountMatch.acc_name : 'Unknown Account',
+    //         category_name: categoryMatch ? categoryMatch.category_name : 'Unknown Category',
+    //     }
+    // })
     // Calculate total expense amount
-    const totalExpense = enrichedExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0)
+    // const totalExpense = enrichedExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0)
+
+    const totalExpense = validExpenses.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0)
 
     // 1. Initial page loading animation for headers & toolbar
     useEffect(() => {
@@ -52,13 +53,13 @@ const ExpensePage = () => {
                 { y: 20, opacity: 0 },
                 { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power2.out' }
             )
-        }, pageRef);
+        }, pageRef)
         return () => ctx.revert()
     }, [])
 
     // 2. List Stagger Animation
     useEffect(() => {
-        if (!isPending && enrichedExpenses.length > 0) {
+        if (!isPending && validExpenses.length > 0) {
             const ctx = gsap.context(() => {
                 setTimeout(() => {
                     const cards = document.querySelectorAll('.expense-card-wrapper')
@@ -72,7 +73,7 @@ const ExpensePage = () => {
             }, pageRef)
             return () => ctx.revert()
         }
-    }, [isPending, enrichedExpenses.length])
+    }, [isPending, validExpenses.length])
 
     const openModalForCreate = () => {
         setIsModalOpen(true)
@@ -120,7 +121,7 @@ const ExpensePage = () => {
                         </div>
                     )}
                 </div>
-                
+
                 {/* Toolbar: Add Button */}
                 <div className="mb-6 flex justify-end header-animate">
                     <button
@@ -131,11 +132,11 @@ const ExpensePage = () => {
                         Add Expense
                     </button>
                 </div>
-                
+
                 {/* Expense List Component */}
                 <div className="mt-6">
                     <ExpenseList
-                        expenses={enrichedExpenses}
+                        expenses={validExpenses}
                         isPending={isPending}
                         isError={isError}
                         error={error}

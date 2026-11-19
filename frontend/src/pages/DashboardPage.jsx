@@ -121,8 +121,6 @@ const DashboardPage = () => {
           )}
         </div>
 
-
-
         {/* Accounts and recent transactions */}
         <section className="mt-8 grid gap-6 lg:grid-cols-2">
           <AccountsOverview accounts={data.accounts} />

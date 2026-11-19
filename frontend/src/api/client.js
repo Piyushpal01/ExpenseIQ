@@ -95,7 +95,7 @@ apiClient.interceptors.response.use(
         
         try {
             const response = await apiClient.post(
-                'auth/token/refresh/',
+                '/auth/token/refresh/',
                 { refresh: savedRefreshToken },
                 { skipAuthRefresh: true }
             )

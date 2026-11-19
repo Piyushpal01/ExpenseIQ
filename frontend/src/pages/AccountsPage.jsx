@@ -30,7 +30,7 @@ const AccountsPage = () => {
             );
 
             // We will animate the cards inside AccountList only when they are not pending
-            if (!isPending && !isError) {
+            if (!isPending && !isError && accounts.length > 0) {
                 gsap.fromTo('.account-card-wrapper',
                     { y: 30, opacity: 0, scale: 0.95 },
                     { y: 0, opacity: 1, scale: 1, duration: 0.5, stagger: 0.08, ease: 'back.out(1.2)', delay: 0.1 }
@@ -91,7 +91,7 @@ const AccountsPage = () => {
                             <div>
                                 <p className="text-xs text-gray-500 font-medium">Total Balance</p>
                                 <p className="text-xl font-bold text-gray-100">
-                                    ₹{totalBalance.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                                    ₹{totalBalance.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                                 </p>
                             </div>
                             <div className="w-px h-8 bg-gray-700"></div>

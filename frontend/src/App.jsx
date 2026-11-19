@@ -8,6 +8,7 @@ import AccountsPage from "./pages/AccountsPage"
 import CategoriesPage from "./pages/CategoriesPage"
 import IncomePage from "./pages/IncomePage"
 import ExpensePage from "./pages/ExpensePage"
+import AppLayout from "./components/ui/AppLayout"
 
 function App() {
 
@@ -18,11 +19,13 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/accounts" element={<AccountsPage />} />
-        <Route path="/categories" element={<CategoriesPage />} />
-        <Route path="/income" element={<IncomePage />} />
-        <Route path="/expense" element={<ExpensePage />} />
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/accounts" element={<AccountsPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/income" element={<IncomePage />} />
+          <Route path="/expense" element={<ExpensePage />} />
+        </Route>
       </Route>
 
       {/*if use enters any wrong url, send back to root */}

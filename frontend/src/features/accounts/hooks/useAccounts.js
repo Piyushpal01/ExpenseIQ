@@ -19,7 +19,7 @@ async function fetchAccounts() {
 // create a new account
 async function createAccount(accountData) {
     const response = await apiClient.post('/accounts/', accountData)
-    console.log(response.data)
+    // console.log(response.data)
     return response.data
 }
 

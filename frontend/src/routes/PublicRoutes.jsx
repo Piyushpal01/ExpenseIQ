@@ -1,0 +1,1 @@
+// PublicRoute do opposite of protected route, it redirects authenticated users away from /login or /register directly to /dashboard. While protected route redirected unauthenticated users to login page

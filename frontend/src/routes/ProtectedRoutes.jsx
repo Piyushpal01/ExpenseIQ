@@ -1,3 +1,5 @@
+// ProtectedRoute blocks unauthenticated users from accessing /dashboard
+
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../features/auth/AuthContext'
 

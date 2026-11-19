@@ -6,12 +6,6 @@ import { useAccounts } from "../../accounts/hooks/useAccounts"
 import { useCategories } from "../../categories/hooks/useCategories"
 
 const ExpenseForm = ({ initialData = null, onSuccess, onCancel }) => {
-    const isEditMode = Boolean(initialData)
-
-    // Load mutations 
-    const createMutation = useCreateExpense()
-    const updateMutation = useUpdateExpense()
-
     // Fetch data for dropdown
     const { data: accounts = [] } = useAccounts()
     const { data: allCategories = [] } = useCategories()
@@ -23,6 +17,22 @@ const ExpenseForm = ({ initialData = null, onSuccess, onCancel }) => {
             (cat.category_type || '').toUpperCase() === "EXPENSE"
         )
     }, [allCategories])
+
+    const isEditMode = Boolean(initialData)
+
+    // for new user register, having 0 categries & accounts, so ensuring user has created atleast 1 account & category
+    // Only block form in Create Mode when accounts/categories are missing
+    const hasNoAccounts = accounts.length === 0
+    const hasNoCategories = expenseCategories.length === 0
+    const isFormBlocked = !isEditMode && (hasNoAccounts || hasNoCategories) // flag to show warning banner & disable form submission
+
+    // Preserve soft-deleted account/category option in Edit Mode so dropdown never breaks
+    const isCurrentAccountDeleted = isEditMode && initialData?.account && !accounts.some(acc => acc.id === initialData.account)
+    const isCurrentCategoryDeleted = isEditMode && initialData?.category && !expenseCategories.some(cat => cat.id === initialData.category)
+
+    // Load mutations 
+    const createMutation = useCreateExpense()
+    const updateMutation = useUpdateExpense()
 
     // Form state
     const [formData, setFormData] = useState({
@@ -36,7 +46,7 @@ const ExpenseForm = ({ initialData = null, onSuccess, onCancel }) => {
     // Populate form data for Edit Mode(used || operator to avoid uncontrolled input error) else show the form for creating new expense
     useEffect(() => {
         // for edit mode
-        if (isEditMode) {
+        if (initialData) {
             setFormData({
                 amount: initialData.amount || '',
                 description: initialData.description || '',
@@ -72,6 +82,39 @@ const ExpenseForm = ({ initialData = null, onSuccess, onCancel }) => {
 
     const isLoading = createMutation.isPending || updateMutation.isPending
 
+    // For rendering Error messages
+    // Combine error states from both create and update mutations into a single source
+    const mutationError = createMutation.error || updateMutation.error
+
+    const getErrorMessage = (err) => {
+        // if no error present
+        if (!err) return null
+
+        // Extract response payload(handles n/w errors where response is undefined)
+        const data = err?.response?.data
+        if (!data) return "Something went wrong. Please try again."
+
+        // case 1: if backend returns plain text/html string(e.g. 500 server error)
+        if (typeof data === "string") return data
+
+        // case 2: standard drf general error format (e.g.{'detail':'not found'})
+        if (data.detail) return data.detail
+        
+        // case 3: for DRF Field-Level validation error (e.g.{amount:["Insuffiecient balance..."]})
+        const firstKey = Object.keys(data)[0]
+        if (firstKey) {
+            const val = data[firstKey]
+            // since drf wraps field errors in an array, extract the first msg
+            return Array.isArray(val) ? val[0] : String(val)
+        }
+
+        // Fallback message if error structure is unrecognized
+        return "Please check your inputs and try again."
+    }
+
+    // Final formatted error for rendering in UI
+    const apiErrorMessage = getErrorMessage(mutationError)
+
     return (
         <div className="bg-gray-900/60 backdrop-blur-xl border border-gray-700/50 p-6 rounded-2xl shadow-xl w-full max-w-md">
             <h2 className="text-2xl font-semibold text-white mb-6">
@@ -79,19 +122,39 @@ const ExpenseForm = ({ initialData = null, onSuccess, onCancel }) => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Warning Banner: Shown when prerequisite accounts or categories are missing */}
+                {isFormBlocked && (
+                    <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-300">
+                        {hasNoAccounts && hasNoCategories
+                            ? "Create at least one Account and Category first before adding a record."
+                            : hasNoAccounts
+                                ? "Create at least one active Account first."
+                                : "Create at least one active Category first."}
+                    </div>
+                )}
+
+                {/* API Error Banner: Displays backend validation or network errors returned on form submission */}
+                {apiErrorMessage && (
+                    <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+                        {apiErrorMessage}
+                    </div>
+                )}
+
                 {/* Amount Field */}
-                <label className="block text-sm font-medium text-gray-400 mb-1">Amount (₹)</label>
-                <input
-                    type="number"
-                    name="amount"
-                    step="0.01"
-                    min="0"
-                    required
-                    value={formData.amount}
-                    onChange={handleChange}
-                    placeholder="e.g. 5000"
-                    className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-rose-500 transition-colors"
-                />
+                <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Amount (₹)</label>
+                    <input
+                        type="number"
+                        name="amount"
+                        step="0.01"
+                        min="0.01"
+                        required
+                        value={formData.amount}
+                        onChange={handleChange}
+                        placeholder="e.g. 5000"
+                        className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-rose-500 transition-colors"
+                    />
+                </div>
 
                 {/* Description Field */}
                 <div>
@@ -132,6 +195,12 @@ const ExpenseForm = ({ initialData = null, onSuccess, onCancel }) => {
                             className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-rose-500 transition-colors appearance-none cursor-pointer"
                         >
                             <option value="" disabled>Select Account</option>
+                            {/* Show current soft-deleted account in Edit Mode */}
+                            {isCurrentAccountDeleted && (
+                                <option value={initialData.account}>
+                                    {initialData.account_name} (Deleted)
+                                </option>
+                            )}
                             {accounts.map(acc => (
                                 <option key={acc.id} value={acc.id}>{acc.acc_name}</option>
                             ))}
@@ -148,6 +217,12 @@ const ExpenseForm = ({ initialData = null, onSuccess, onCancel }) => {
                             className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-rose-500 transition-colors appearance-none cursor-pointer"
                         >
                             <option value="" disabled>Select Category</option>
+                            {/* Show current soft-deleted category in Edit Mode */}
+                            {isCurrentCategoryDeleted && (
+                                <option value={initialData.category}>
+                                    {initialData.category_name} (Deleted)
+                                </option>
+                            )}
                             {expenseCategories.map(cat => (
                                 <option key={cat.id} value={cat.id}>{cat.category_name}</option>
                             ))}
@@ -168,8 +243,8 @@ const ExpenseForm = ({ initialData = null, onSuccess, onCancel }) => {
 
                     <button
                         type="submit"
-                        disabled={isLoading}
-                        className="flex-1 px-4 py-2.5 rounded-lg bg-rose-600 text-white font-medium hover:bg-rose-500 transition-colors disabled:opacity-50 flex justify-center items-center"
+                        disabled={isLoading || isFormBlocked}
+                        className="flex-1 px-4 py-2.5 rounded-lg bg-rose-600 text-white font-medium hover:bg-rose-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
                     >
                         {isLoading ? (
                             <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>

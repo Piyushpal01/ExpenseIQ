@@ -1,3 +1,5 @@
+// Global app providers wrapper configuring TanStack Query client and caching defaults.
+
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 
 // Global cache and req engine config

@@ -3,6 +3,8 @@
 import { formatCurrency } from "../../../utils/formatCurrency"
 
 // Badges - Income, Expense, Net-Balance, Account Balance
+// Net Balance: Lifetime profit & loss calculated as (Total Income - Total Expense) across all transactions, including deleted accounts.
+// Total Account Balance: Current available liquidity summing the balances of only currently active accounts (is_active=True).
 function getBadgeStyle(type) {
     switch (type) {
         case 'income':

@@ -5,6 +5,34 @@ import apiClient, { setAccessToken } from '../../api/client'
 
 const AuthContext = createContext(null)
 
+// [ADDED]: Module-level lock so React StrictMode's double-mount shares ONE refresh request, this solves the problem re-logging on reload
+let restoreSessionPromise = null
+
+async function performSessionRestore() {
+    const savedRefreshToken = sessionStorage.getItem('refreshToken')
+    if(!savedRefreshToken) return null
+
+    const response = await apiClient.post(
+        '/auth/token/refresh/', 
+        { refresh: savedRefreshToken },
+        { skipAuthRefresh: true
+    })
+
+    const newAccessToken = response.data.access
+    const newRefreshToken = response.data.refresh || savedRefreshToken
+
+    // Save tokens immediately BEFORE returning (never lost on StrictMode unmount)
+    setAccessToken(newAccessToken)
+    sessionStorage.setItem('refreshToken', newRefreshToken)
+
+    const profileResponse = await apiClient.get('/users/profile/')
+
+    return {
+        user: profileResponse.data,
+        refreshToken: newRefreshToken,
+    }
+}
+
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
     const [refreshToken, setRefreshToken] = useState(null)
@@ -20,58 +48,36 @@ export function AuthProvider({ children }) {
 
         // Restore the session after page reload, implementing with session restoration logic
         async function restoreSession() {
-            // get refresh token from session storage
-            const savedRefreshToken = sessionStorage.getItem('refreshToken')
-
-            // if no refreshToken, return
-            if(!savedRefreshToken) {
-                setIsInitializing(false)
-                return
-            }
-
             try {
-                // Exchange the saved refresh token for a new access token.
-                const response = await apiClient.post('/auth/token/refresh/', {
-                    refresh: savedRefreshToken,
-                })
-                
-                if(!isMounted) {
-                    return
+                // Reuse in-flight promise if StrictMode triggered a second mount
+                if (!restoreSessionPromise) {
+                    restoreSessionPromise = performSessionRestore().finally(() => {
+                        restoreSessionPromise = null
+                    })
                 }
 
-                // Set the access token before making authenticated API requests.
-                setAccessToken(response.data.access)
-
-                // Save the rotated refresh token if the backend returns one.
-                const newRefreshToken = response.data.refresh || savedRefreshToken
-                sessionStorage.setItem('refreshToken', newRefreshToken)
-                setRefreshToken(newRefreshToken)
-
-                // Session restoration
-                // Fetch the authenticated user's actual profile.
-                const profileResponse = await apiClient.get('/users/profile/')
-                // console.log("profile response => ", profileResponse);
+                // Await the shared session restoration result
+                const sessionData = await restoreSessionPromise
+                if (!isMounted) return
                 
+                // if valid session recovered
+                if (sessionData) {
+                    setUser(sessionData.user)
+                    setRefreshToken(sessionData.refreshToken)
+                    setIsAuthenticated(true)
+                }
+            } catch {
+                // Abort state cleanup if component is already unmounted
+                if (!isMounted) return
 
-                if(!isMounted) return
-                
-                // Restore user profile and authentication state, now since the endpoint provide the user data we can set it to profile
-                setUser(profileResponse.data)
-                setIsAuthenticated(true)
-            }
-            catch {
-                if(!isMounted) return
-
-                // An expired or invalid refresh token cannot restore this session.
                 sessionStorage.removeItem('refreshToken')
                 setAccessToken(null)
                 setRefreshToken(null)
                 setUser(null)
                 setIsAuthenticated(false)
-            }
-            finally {
-                // Marks initialization as complete in both success and failure scenarios.
-                if(isMounted) {
+            } finally {
+                // Mark initial auth loading as complete once restore settles
+                if (isMounted) {
                     setIsInitializing(false)
                 }
             }
