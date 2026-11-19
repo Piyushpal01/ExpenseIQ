@@ -20,6 +20,8 @@ class DashboardView(APIView):
 
     Returns:
         Response: JSON with total stats, individual account liquidity, and top 5 recent transactions. This dashboard app itself have no table, it just read other apps table and calculates and return response as collective data.
+        Data that is send as response while hitting get method on /dashboard
+        [ total income, total expense, net balance, total acc balance, recent_transactions, active accounts, category_expenses(chart data), category_incomes(chart data), monthly_chart_data(income vs expense trend) ]
     """
 
     permission_classes = [IsAuthenticated]
@@ -38,12 +40,13 @@ class DashboardView(APIView):
         # net savings
         net_balance = total_income - total_expense
 
-        # Account Summary
+        # Account Summary - Active accounts only (soft-deleted accounts excluded)
         # .values() fetches raw dictionaries / specific fields instead of heavy Django model instances like .all() which fetches all fields, saving RAM.
-        accounts = Account.objects.filter(user=user).values("id", "acc_name", "acc_type", "acc_balance")
+        active_accounts_qs = Account.objects.filter(user=user, is_active=True)
+        accounts = active_accounts_qs.values("id", "acc_name", "acc_type", "acc_balance")
 
         # Total balance, Trigger SQL Sum across all accounts to compute overall liquidity
-        total_account_balance = Account.objects.filter(user=user).aggregate(total=Sum("acc_balance"))["total"] or 0
+        total_account_balance = active_accounts_qs.aggregate(total=Sum("acc_balance"))["total"] or 0
 
         '''
         Net Balance and total_account_balance might look same in starting but they have different work:

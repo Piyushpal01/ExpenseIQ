@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, serializers
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -33,13 +33,14 @@ class ExpenseViewSet(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
-        """fetch only those expense records that belong to current logged-in user"""
-        return Expense.objects.filter(user=self.request.user)
+        """fetch only those expense records that belong to current logged-in user & JOIN account/category"""
+        return Expense.objects.filter(user=self.request.user).select_related("account", "category")
 
     def perform_create(self, serializer):
         """
         Saves the income entry for the logged-in user and safely increases their account balance.
         Automatically binds request.user to the record and uses database locks to prevent concurrent race conditions.
+        For Credit-Cards accounts balance can be -ve, but Bank, Cash, UPI, others cant have -ve balance.
         """
 
         # Transaction Block
@@ -50,8 +51,18 @@ class ExpenseViewSet(viewsets.ModelViewSet):
             # Lock the entire Account row so no other parallel request can modify its balance simultaneously
             account = Account.objects.select_for_update().get(id=expense.account.id)
 
-            # As in expense model money will get deduct, so deduct the balance by expense amount, and save the update balance
+            # Store available balance before deduction (used for accurate error reporting)
+            available_balance = account.acc_balance
+
+            # Deduct the balance by expense amount  
             account.acc_balance -= expense.amount
+
+            # Prevent negative balance for non-credit-card accounts
+            if account.acc_type != "CREDIT_CARD" and account.acc_balance < 0:
+                raise serializers.ValidationError(
+                {"amount": f"Insufficient balance. Available Balance: ₹{available_balance}"}
+            )
+            
             account.save(update_fields=['acc_balance'])
 
     def perform_update(self, serializer):
@@ -87,10 +98,18 @@ class ExpenseViewSet(viewsets.ModelViewSet):
                 # Lock single account row,, so no other request can modify it's balance
                 account = Account.objects.select_for_update().get(id=old_account_id)
 
+                # Store current balance before applying difference
+                available_balance = account.acc_balance
                 difference = new_amount - old_amount
 
                 # update balance, deduct calculated difference from already saved balance(e.g. if expense increase, balance goes down)
                 account.acc_balance -= difference
+
+                # Prevent negative balance for non-credit-card accounts
+                if account.acc_type != "CREDIT_CARD" and account.acc_balance < 0:
+                    raise serializers.ValidationError(
+                        {"amount": f"Insufficient balance. Available Balance: ₹{available_balance}"}
+                    )
                 account.save(update_fields=['acc_balance'])
             else:
                 '''CASE-2: If account changed -> move amount between accounts'''
@@ -105,13 +124,22 @@ class ExpenseViewSet(viewsets.ModelViewSet):
                 for account in locked_accounts:
                     accounts[account.id] = account
 
-                # 3. Extract the locked objects safely using keys
+                # Extract the locked objects safely using keys
                 old_account = accounts[old_account_id]
                 new_account = accounts[new_account_id]
 
                 # Revert the old account by adding back the old expense amount, and deduct the new amount from the new account & save
                 old_account.acc_balance += old_amount
+
+                # Store available balance of new account before deduction
+                new_available_balance = new_account.acc_balance
                 new_account.acc_balance -= new_amount
+
+                # Prevent negative balance on the new account (if raised, atomic block rolls back old_account too)
+                if new_account.acc_type != "CREDIT_CARD" and new_account.acc_balance < 0:
+                    raise serializers.ValidationError(
+                        {"amount": f"Insufficient balance in {new_account.acc_name} account. Available Balance: ₹{new_available_balance}"}
+                    )
 
                 old_account.save(update_fields=["acc_balance"])
                 new_account.save(update_fields=["acc_balance"])

@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, serializers
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -31,8 +31,8 @@ class IncomeViewSet(viewsets.ModelViewSet):
     ordering = ["-date", "-created_at"]
 
     def get_queryset(self):
-        """fetch only those income records that belong to current logged-in user"""
-        return Income.objects.filter(user=self.request.user)
+        """fetch only those income records that belong to current logged-in user & JOIN account & category to prevent N+1 queries"""
+        return Income.objects.filter(user=self.request.user).select_related("account", "category")
 
     def perform_create(self, serializer):
         """
@@ -53,13 +53,15 @@ class IncomeViewSet(viewsets.ModelViewSet):
             # SELECT_FOR_UPDATE locks this specific Account row in the DB so no other request can modify its balance simultaneously
             account = Account.objects.select_for_update().get(id=income.account.id)
             
-            # As in income model money will get add, so increase the balance by income's amount, and update only acc_balance col in db to optimize speed and avoiding overwriting other fields
+            # As in income model money will get add, so increase the balance by income's amount.
             account.acc_balance += income.amount
+            # update only acc_balance col in db to optimize speed and avoiding overwriting other fields
             account.save(update_fields=['acc_balance']) 
 
     def perform_update(self, serializer):
         """
         Updates the income records and updates account balances.
+        Negative Balance Guard(in perform update and destroy): Money is deducted from an acc when a user reduces prev income or shifts it to other account or deletes it. If deducting this money causes any acc other than credit card to drop below 0, it must be blocked. 
         
         Logic:
         - CASE-1: If the account stays the same, it only calculates and updates the difference in amount.
@@ -71,6 +73,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
             # Fetch and lock the OLD income row.
             # This prevents concurrent updates from changing the historical values while this transaction is running.
             # self.get_object() directly fetch data from db nd returns model object(complete row), thru which we can acess any columnss
+            
             old_income_object = Income.objects.select_for_update().get(pk=self.kwargs["pk"])
             # print("old_income_object =>", old_income_object)
 
@@ -89,12 +92,20 @@ class IncomeViewSet(viewsets.ModelViewSet):
                 '''CASE-1: If account same -> calculate difference and update balance'''
                 # Lock single account row, so other req cannot change it simultaneously, old_acc_id is the one to get update so lock it
                 account = Account.objects.select_for_update().get(id=old_account_id)    
+                available_balance = account.acc_balance
 
                 # calculate difference 
                 difference = new_amount - old_amount
 
                 # update balance and save, add the calculated difference in already saved balance
                 account.acc_balance += difference
+
+                # Prevent negative balance for non-credit-card accounts
+                if account.acc_type != "CREDIT_CARD" and account.acc_balance < 0:
+                    raise serializers.ValidationError(
+                        {"amount": f"Cannot reduce income. Account balance would drop below ₹0 (Available Balance: ₹{available_balance})."}
+                    )
+                
                 account.save(update_fields=['acc_balance'])
             else:
                 '''CASE-2: If account changed -> move amount between accounts'''
@@ -111,8 +122,17 @@ class IncomeViewSet(viewsets.ModelViewSet):
                 old_account = accounts[old_account_id]
                 new_account = accounts[new_account_id]
 
-                # Deduct the old income amount from the old account (reverting it), and add new income amount to the new account
+                # Store old account balance before reverting income
+                old_available_balance = old_account.acc_balance
                 old_account.acc_balance -= old_amount
+
+                # Prevent negative balance on the old account when reverting this income
+                if old_account.acc_type != "CREDIT_CARD" and old_account.acc_balance < 0:
+                    raise serializers.ValidationError(
+                        {"account": f"Cannot move income from '{old_account.acc_name}'. Balance would drop below ₹0 (Available: ₹{old_available_balance})."}
+                    )
+
+                # add new income amount to the new account
                 new_account.acc_balance += new_amount
 
                 # save for both rows
@@ -125,9 +145,17 @@ class IncomeViewSet(viewsets.ModelViewSet):
             # Lock the account row associated with income entry
             # print("____INSTANCE_____ ", instance)
             account = Account.objects.select_for_update().get(id=instance.account_id)
+            available_balance = account.acc_balance
 
             # Deduct the income amount from acc_balance, as it no longer exist, and save in db
             account.acc_balance -= instance.amount
+
+            # Prevent negative balance for non-credit-card accounts upon income deletion
+            if account.acc_type != "CREDIT_CARD" and account.acc_balance < 0:
+                raise serializers.ValidationError(
+                    {"detail": f"Cannot delete this income because '{account.acc_name}' balance would drop below ₹0 (Available: ₹{available_balance})."}
+                )
+            
             account.save(update_fields=['acc_balance'])
 
             # Permanently delete the income recoord from db
