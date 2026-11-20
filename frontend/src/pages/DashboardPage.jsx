@@ -5,7 +5,7 @@ import { useAuth } from "../features/auth/AuthContext"
 import { useNavigate } from 'react-router-dom'
 import { useDashboard } from '../features/dashboard/hooks/useDashboard'
 
-import DashboardHeader from '../features/dashboard/components/DashboardHeader'
+// import DashboardHeader from '../features/dashboard/components/DashboardHeader'
 import FinancialOverview from '../features/dashboard/components/FinancialOverview'
 import AccountsOverview from '../features/dashboard/components/AccountsOverview'
 import RecentTransactions from '../features/dashboard/components/RecentTransactions'
@@ -19,20 +19,20 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
 const DashboardPage = () => {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  // const { user, logout } = useAuth()
+  // const navigate = useNavigate()
   const containerRef = useRef(null)
 
   const { data, isPending, isError, error, refetch } = useDashboard()
 
   // Handles logout and redirects the user to the login page.
-  const handleLogout = async () => {
-    try {
-      await logout()
-    } finally {
-      navigate('/login', { replace: true })
-    }
-  }
+  // const handleLogout = async () => {
+  //   try {
+  //     await logout()
+  //   } finally {
+  //     navigate('/login', { replace: true })
+  //   }
+  // }
 
   // Animate dashboard sections only after successful data loading.
   useGSAP(
@@ -43,28 +43,17 @@ const DashboardPage = () => {
         defaults: { ease: 'power3.out' },
       })
 
-      // Animate the dashboard header.
+      // Animate financial stat cards with a stagger effect and also the remaining dashboard panels.
       tl.fromTo(
-        '.dash-header',
-        { y: -20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6 },
+        '.stat-card',
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 },
+      ).fromTo(
+        '.content-panel',
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, stagger: 0.1 },
+        '-=0.25',
       )
-
-        // Animate financial stat cards with a stagger effect.
-        .fromTo(
-          '.stat-card',
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.5, stagger: 0.08 },
-          '-=0.3',
-        )
-
-        // Animate the remaining dashboard panels.
-        .fromTo(
-          '.content-panel',
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, stagger: 0.12 },
-          '-=0.2',
-        )
     },
     {
       scope: containerRef,
@@ -95,16 +84,16 @@ const DashboardPage = () => {
     >
       <div className="mx-auto max-w-7xl">
         {/* Dashboard header and logout action */}
-        <DashboardHeader
+        {/* <DashboardHeader
           user={user}
           onLogout={handleLogout}
-        />
+        /> */}
 
         {/* Financial summary cards */}
         <FinancialOverview data={data} />
 
         {/* Charts section */}
-        <div className="mt-8 space-y-6 dash-animate">
+        <div className="mt-8 space-y-6">
           {/* Main Bar Chart (Spans full width on large screens) */}
           {data.monthly_chart_data?.length > 0 && (
             <div className="lg:col-span-2">
@@ -114,7 +103,7 @@ const DashboardPage = () => {
 
           {/* Pie Charts Grid */}
           {(data.category_expenses?.length > 0 || data.category_incomes?.length > 0) && (
-            <section className="mt-8 grid gap-6 lg:grid-cols-2">
+            <section className="grid gap-6 lg:grid-cols-2">
               <ExpenseCategoryChart data={data.category_expenses} />
               <IncomeCategoryChart data={data.category_incomes} />
             </section>

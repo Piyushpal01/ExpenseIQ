@@ -1,26 +1,25 @@
 // Main page for income management.
-// Displays total income, list of income records & handles edit / delete modal
+// Displays total income, server-side search/filter utility panel, and income records list
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useIncome } from "../features/income/hooks/useIncome"
-// import { useAccounts } from "../features/accounts/hooks/useAccounts"
-// import { useCategories } from "../features/categories/hooks/useCategories"
 import IncomeList from "../features/income/components/IncomeList"
 import IncomeForm from "../features/income/components/IncomeForm"
+import TransactionFilters from "../components/ui/TransactionFilters"
 import Modal from "../components/ui/Modal"
 import gsap from "gsap"
 
+const INITIAL_FILTERS = {
+    search: "",
+    account: "",
+    category: "",
+    date: "",
+    ordering: "-date,-created_at",
+}
+
 const IncomePage = () => {
-    // API fetch - income, accounts, categories
-    const { data: rawIncomes = [], isPending, isError, error, refetch } = useIncome()
-    // const { data: accounts = [] } = useAccounts()
-    // const { data: userCategories = [] } = useCategories()
-
-    // Filter to ONLY use INCOME categories for this page's mapping
-    // const incomeCategories = userCategories.filter(cat => 
-    //     (cat.category_type || '').toUpperCase() === "INCOME"
-    // )
-
+    const [filters, setFilters] = useState(INITIAL_FILTERS)
+    const { data: rawIncomes = [], isPending, isFetching, isError, error, refetch } = useIncome(filters)   // API fetch
     const pageRef = useRef()
 
     // Modal & form states
@@ -29,24 +28,17 @@ const IncomePage = () => {
 
     const validIncomes = Array.isArray(rawIncomes) ? rawIncomes : []
 
-    // Mapping account name, category name with strict type coercion just in case as in income we receive only id so using that we are mapping that id account name and category and date also.
-    // const enrichedIncomes = validIncomes.map(income => {
-    //     // Use String() to ensure '7' (string) and 7 (number) match correctly
-    //     const accountMatch = accounts.find(acc => acc.id === income.account)
-    //     const categoryMatch = incomeCategories.find(cat => cat.id === income.category)
-
-    //     return {
-    //         ...income, 
-    //         account_name: accountMatch ? accountMatch.acc_name : 'Unknown Account',
-    //         category_name: categoryMatch ? categoryMatch.category_name : 'Unknown Category',
-    //     }
-    // })
-
-
-    // Calculate toal income using enriched data 
-    // const totalIncome = enrichedIncomes.reduce((sum, inc) => sum + parseFloat(inc.amount || 0), 0)
-
     const totalIncome = validIncomes.reduce((sum, inc) => sum + parseFloat(inc.amount || 0), 0)
+
+    // Method to handler filter change
+    const handleFilterChange = useCallback((key, value) => {
+        setFilters((prev) => ({ ...prev, [key]: value }))
+    }, [])
+
+    // Method to reset filters
+    const handleResetFilters = useCallback(() => {
+        setFilters(INITIAL_FILTERS)
+    }, [])
 
     // 1. Initial page loading animation for headers & toolbar
     useEffect(() => {
@@ -98,48 +90,38 @@ const IncomePage = () => {
     }
 
     return (
-        <main ref={pageRef} className="min-h-screen bg-[#0A0A0A] text-white px-4 py-8 sm:px-6 lg:px-8 font-sans">
-            <div className="mx-auto max-w-5xl">
-
-                {/* Header & stats section */}
-                <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 header-animate">
-                    <div>
-                        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-linear-to-r from-emerald-400 to-teal-300">
-                            Income
-                        </h1>
-
-                        <p className="mt-2 text-sm text-gray-400">
-                            Track all your earning sources and incoming cash flows.
-                        </p>
-                    </div>
-
-                    {!isPending && !isError && (
-                        <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-4 min-w-50 flex items-center justify-between backdrop-blur-md">
-                            <div>
-                                <p className="text-xs text-gray-400 font-medium mb-1">Total Income</p>
-                                <p className="text-2xl font-bold text-emerald-400">₹{totalIncome.toFixed(2)}</p>
-                            </div>
-
-                            <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
-                            </div>
+        <main ref={pageRef} className="mx-auto max-w-7xl px-4 py-6 text-white sm:px-8 font-sans">
+            {/* Top Summary & Add Button Bar */}
+            <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 header-animate">
+                {!isPending && !isError ? (
+                    <div className="bg-slate-900/55 border border-slate-800/80 rounded-2xl p-4 min-w-60 flex items-center justify-between backdrop-blur-md">
+                        <div>
+                            <p className="text-xs text-slate-400 font-medium mb-1">
+                                {filters.search || filters.account || filters.category || filters.date
+                                    ? "Filtered Income Total"
+                                    : "Total Income"}
+                            </p>
+                            <p className="text-2xl font-bold text-emerald-400">₹{totalIncome.toFixed(2)}</p>
                         </div>
-                    )}
-                </div>
 
-                {/* Toolbar: Add Button */}
-                <div className="mb-6 flex justify-end header-animate">
-                    <button
-                        onClick={openModalForCreate}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-5 py-2.5 rounded-xl font-medium transition-all"
-                    >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
-                        Add Income
-                    </button>
-                </div>
+                        <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+                        </div>
+                    </div>
+                ) : <div />}
 
-                {/* Income List Component */}
-                <div className="mt-6">
+                <button
+                    onClick={openModalForCreate}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 cursor-pointer bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-5 py-3 rounded-xl font-medium transition-all"
+                >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+                    Add Income
+                </button>
+            </div>
+
+            {/* 2-Column Split: Transactions List (Left) + Utility Filters Panel (Right) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 items-start">
+                <section className={`lg:col-span-8 order-2 lg:order-1 transition-opacity duration-200 ${isFetching ? "opacity-70" : "opacity-100"}`}>
                     <IncomeList
                         incomes={validIncomes}
                         isPending={isPending}
@@ -147,6 +129,16 @@ const IncomePage = () => {
                         error={error}
                         onEdit={handleEdit}
                         refetch={refetch}
+                    />
+                </section>
+
+                <div className="lg:col-span-4 order-1 lg:order-2">
+                    <TransactionFilters
+                        type="income"
+                        filters={filters}
+                        onChange={handleFilterChange}
+                        onReset={handleResetFilters}
+                        isFetching={isFetching}
                     />
                 </div>
             </div>

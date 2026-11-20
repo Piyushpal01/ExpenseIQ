@@ -1,14 +1,22 @@
 // Hooks for Income CRUD operations, using Tanstack query
 
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query"
+import { useQuery, useQueryClient, useMutation, keepPreviousData } from "@tanstack/react-query"
 import apiClient from "../../../api/client"
 
 // Global query key
 export const ExpenseQueryKey = ["expense"]
 
-// Fetch all expense records
-async function fetchExpenses() {
-    const response = await apiClient.get('/expense/')
+// Remove empty filter values so clean query params are sent to DRF
+function buildCleanParams(filters = {}) {
+    return Object.fromEntries(
+        Object.entries(filters).filter(([, value]) => value !== "" && value !== null && value !== undefined)
+    )
+}
+
+// Fetch filtered/sorted expense records
+async function fetchExpenses(filters = {}) {
+    const params = buildCleanParams(filters)
+    const response = await apiClient.get('/expense/', {params})
     
     // DRF paginatipn check
     return Array.isArray(response.data)
@@ -35,11 +43,14 @@ async function deleteExpense(id) {
 }
 
 // Custom hooks for performing above expense CRUD operations
-// Fetch expense hook
-export function useExpense() {
+// Fetch expense hook with server-side search, filter & ordering
+export function useExpense(filters = {}) {
+    const cleanParams = buildCleanParams(filters)
+    
     return useQuery({
-        queryKey: ExpenseQueryKey,
-        queryFn: fetchExpenses,
+        queryKey: [...ExpenseQueryKey, cleanParams],
+        queryFn: () => fetchExpenses(cleanParams),
+        placeholderData: keepPreviousData,   // Keeps old list visible while new filtered data loads
     })
 }
 

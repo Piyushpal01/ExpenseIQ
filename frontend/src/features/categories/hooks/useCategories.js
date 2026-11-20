@@ -49,6 +49,7 @@ export function useCategories() {
 
 export function useCreateCategory() {
     const queryClient = useQueryClient()
+    
     return useMutation({
         mutationFn: createCategory,
         onSuccess: () => {

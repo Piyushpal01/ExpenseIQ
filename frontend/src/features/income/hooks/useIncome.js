@@ -1,14 +1,22 @@
 // Hooks for Income CRUD operations, using Tanstack query
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import apiClient from "../../../api/client"
 
 // Global query key
 export const IncomeQueryKey = ["income"]
 
-// Fetch all income records
-async function fetchIncomes() {
-    const response = await apiClient.get('/income/')
+// Remove empty filter values so clean query params are sent to DRF
+function buildCleanParams(filters = {}) {
+    return Object.fromEntries(
+        Object.entries(filters).filter(([, value]) => value !== "" && value !== null && value !== undefined)
+    )
+}
+
+// Fetch filtered/sorted income records
+async function fetchIncomes(filters = {}) {
+    const params = buildCleanParams(filters)
+    const response = await apiClient.get('/income/', {params})
     
     // DRF pagination check
     return Array.isArray(response.data)
@@ -19,9 +27,6 @@ async function fetchIncomes() {
 // Create new income
 async function createIncome(incomeData) {
     const response = await apiClient.post('/income/', incomeData)
-    // console.log("data sent from fronted -> ", incomeData);
-    // console.log("Received response data -> ", response.data);
-    
     return response.data
 }
 
@@ -39,11 +44,14 @@ async function deleteIncome(id) {
 
 // Custom hooks for performing above income CRUD operations
 
-// Fetch income hook
-export function useIncome() {
+// Fetch income hook with server-side search, filter & ordering
+export function useIncome(filters = {}) {
+    const cleanParams = buildCleanParams(filters)
+
     return useQuery({
-        queryKey: IncomeQueryKey,
-        queryFn: fetchIncomes,
+        queryKey: [...IncomeQueryKey, cleanParams],
+        queryFn: () => fetchIncomes(cleanParams),
+        placeholderData: keepPreviousData,
     })
 }
 

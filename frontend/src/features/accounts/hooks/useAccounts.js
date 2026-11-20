@@ -12,8 +12,8 @@ async function fetchAccounts() {
 
     // DRF can return either a paginated object or a plain array as response.
     return Array.isArray(response.data)
-        ? response.data
-        : response.data.results || []
+    ? response.data
+    : response.data.results || []
 }
 
 // create a new account
@@ -50,8 +50,7 @@ export function useCreateAccount() {
 
     return useMutation({
         // Triggers the actual API call function to create the account
-        mutationFn: createAccount,
-        
+        mutationFn: createAccount,      
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: accountsQueryKey,
@@ -66,7 +65,6 @@ export function useUpdateAccount() {
 
     return useMutation({
         mutationFn: updateAccount,
-
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: accountsQueryKey,
@@ -81,7 +79,6 @@ export function useDeactivateAccount() {
 
     return useMutation({
         mutationFn: deactivateAccount,
-
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: accountsQueryKey,

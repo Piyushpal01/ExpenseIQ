@@ -1,6 +1,6 @@
-// AppLayout.jsx => Shared authenticated shell with branding, center-pop floating glassmorphism navbar, and logout
+// AppLayout.jsx => Shared authenticated shell with branding, smooth floating glassmorphism navbar, and logout
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../features/auth/AuthContext'
 
@@ -22,8 +22,10 @@ const AppLayout = () => {
     const [isScrolled, setIsScrolled] = useState(false)
 
     const activeItem = NAV_ITEMS.find((item) => item.to === location.pathname) || NAV_ITEMS[0]
+    // console.log(activeItem);
+    
 
-    const movePillTo = (path) => {
+    const movePillTo = useCallback((path) => {
         const el = linkRefs.current[path]
         if (!el) return
         setPillStyle({
@@ -31,29 +33,28 @@ const AppLayout = () => {
             width: el.offsetWidth,
             opacity: 1,
         })
-    }
+    }, [])
 
-    // Track scroll position to detach and float the pill navbar at top
+    // Detach and float navbar smoothly on scroll
     useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 80)
-        }
+        const handleScroll = () => setIsScrolled(window.scrollY > 72)
         window.addEventListener('scroll', handleScroll, { passive: true })
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    // Recalculate glowing pill position on route change, resize, or floating state change
+    // Keep sliding pill locked to active route across transitions and resizes
     useEffect(() => {
-        const updateActivePill = () => movePillTo(location.pathname)
-        updateActivePill()
-        // Re-measure right after width transition settles
-        const timer = setTimeout(updateActivePill, 150)
-        window.addEventListener('resize', updateActivePill)
+        const raf = requestAnimationFrame(() => movePillTo(location.pathname))
+        const timer = setTimeout(() => movePillTo(location.pathname), 180)
+        const handleResize = () => movePillTo(location.pathname)
+
+        window.addEventListener('resize', handleResize)
         return () => {
+            cancelAnimationFrame(raf)
             clearTimeout(timer)
-            window.removeEventListener('resize', updateActivePill)
+            window.removeEventListener('resize', handleResize)
         }
-    }, [location.pathname, isScrolled])
+    }, [location.pathname, isScrolled, movePillTo])
 
     const handleLogout = async () => {
         try {
@@ -65,13 +66,12 @@ const AppLayout = () => {
 
     return (
         <div className="min-h-screen bg-slate-950 text-white font-sans">
-            {/* Shared Top Navigation Header */}
             <header className="mx-auto max-w-7xl px-4 pt-6 sm:px-8">
                 <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/60 pb-6">
                     {/* LEFT: Branding & Active Page Context */}
                     <div className="order-1">
                         <div className="flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
                             <p className="text-xs font-bold tracking-widest text-emerald-400 uppercase">
                                 ExpenseIQ
                             </p>
@@ -95,10 +95,9 @@ const AppLayout = () => {
                         </p>
                     </div>
 
-                    {/* CENTER: Animated Glassmorphism Pill Navbar (Center Pop-Out & Wide on Scroll) */}
+                    {/* CENTER: Floating Glassmorphism Pill Navbar */}
                     <div className="order-3 w-full lg:order-2 lg:w-auto">
-                        {/* Invisible placeholder to prevent layout jump when navbar detaches */}
-                        {isScrolled && <div className="h-13 w-full lg:w-115" aria-hidden="true" />}
+                        {isScrolled && <div className="h-12 w-full lg:w-115" aria-hidden="true" />}
 
                         <div
                             className={
@@ -110,26 +109,28 @@ const AppLayout = () => {
                             <nav
                                 aria-label="Primary navigation"
                                 onMouseLeave={() => movePillTo(location.pathname)}
-                                className={`pointer-events-auto ${isScrolled
-                                        ? 'w-full max-w-3xl animate-[centerPopOut_0.28s_cubic-bezier(0.16,1,0.3,1)_forwards]'
+                                className={`pointer-events-auto ${
+                                    isScrolled
+                                        ? 'w-full max-w-2xl animate-[navFloatIn_0.35s_cubic-bezier(0.22,1,0.36,1)_forwards]'
                                         : 'relative w-full lg:w-auto'
-                                    }`}
+                                }`}
                             >
                                 <div
-                                    className={`relative flex flex-wrap items-center rounded-2xl border p-1.5 backdrop-blur-xl transition-all duration-300 ${isScrolled
-                                            ? 'justify-between sm:justify-around gap-2 border-white/15 bg-slate-900/85 px-3 py-2 shadow-[0_14px_45px_rgba(0,0,0,0.8),0_0_28px_rgba(139,92,246,0.22)]'
-                                            : 'justify-center gap-1 border-white/10 bg-slate-900/55 shadow-[0_8px_32px_rgba(0,0,0,0.45)]'
-                                        }`}
+                                    className={`no-scrollbar relative flex flex-nowrap items-center overflow-x-auto rounded-2xl border p-1.5 ring-1 ring-inset backdrop-blur-2xl transition-all duration-300 ${
+                                        isScrolled
+                                            ? 'justify-between sm:justify-around gap-1 border-white/15 bg-slate-900/80 px-2.5 py-1.5 ring-white/10 shadow-[0_16px_48px_rgba(0,0,0,0.75),0_0_30px_rgba(139,92,246,0.2)]'
+                                            : 'justify-start sm:justify-center gap-1 border-white/10 bg-slate-900/50 ring-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.4)]'
+                                    }`}
                                 >
-                                    {/* Sliding Glowing Glass Pill */}
+                                    {/* Smooth Spring-Gliding Glass Pill */}
                                     <span
                                         aria-hidden="true"
                                         style={{
-                                            transform: `translateX(${pillStyle.left}px)`,
+                                            transform: `translate3d(${pillStyle.left}px, 0, 0)`,
                                             width: `${pillStyle.width}px`,
                                             opacity: pillStyle.opacity,
                                         }}
-                                        className="pointer-events-none absolute top-1.5 left-0 h-[calc(100%-12px)] rounded-xl border border-violet-400/30 bg-linear-to-r from-violet-500/25 via-fuchsia-500/15 to-emerald-500/25 shadow-[0_0_20px_rgba(139,92,246,0.28)] transition-all duration-300 ease-out"
+                                        className="pointer-events-none absolute top-1.5 left-0 h-[calc(100%-12px)] rounded-xl border border-violet-400/35 bg-linear-to-r from-violet-500/30 via-fuchsia-500/15 to-emerald-400/25 shadow-[0_0_22px_rgba(139,92,246,0.3)] will-change-transform transition-[transform,width,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
                                     />
 
                                     {NAV_ITEMS.map((item) => (
@@ -141,12 +142,14 @@ const AppLayout = () => {
                                             }}
                                             onMouseEnter={() => movePillTo(item.to)}
                                             className={({ isActive }) =>
-                                                `relative z-10 rounded-xl font-medium tracking-wide transition-all duration-200 ${isScrolled
-                                                    ? 'px-4 py-2 text-xs sm:px-6 sm:text-sm'
-                                                    : 'px-3.5 py-2 text-xs sm:px-4 sm:text-sm'
-                                                } ${isActive
-                                                    ? 'text-white'
-                                                    : 'text-slate-400 hover:text-slate-100'
+                                                `relative z-10 shrink-0 rounded-xl font-medium tracking-wide transition-colors duration-200 ${
+                                                    isScrolled
+                                                        ? 'px-4 py-2 text-xs sm:px-5 sm:text-sm'
+                                                        : 'px-3.5 py-2 text-xs sm:px-4 sm:text-sm'
+                                                } ${
+                                                    isActive
+                                                        ? 'text-white'
+                                                        : 'text-slate-400 hover:text-slate-100'
                                                 }`
                                             }
                                         >
@@ -180,23 +183,30 @@ const AppLayout = () => {
                     </button>
                 </div>
             </header>
-            {/* 👇 YAHAN ADD KARNA HAI (</header> ke baad aur <Outlet /> se pehle) */}
+
             <style>{`
-                @keyframes centerPopOut {
+                @keyframes navFloatIn {
                     0% {
                         opacity: 0;
-                        transform: translateY(-12px) scale(0.92);
+                        transform: translate3d(0, -10px, 0) scale(0.95);
                     }
                     100% {
                         opacity: 1;
-                        transform: translateY(0) scale(1);
+                        transform: translate3d(0, 0, 0) scale(1);
                     }
+                }
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
                 }
             `}</style>
 
-            {/* Active Route Content Renders Here */}
             <Outlet />
         </div>
     )
 }
+
 export default AppLayout
