@@ -72,7 +72,7 @@ const AccountsPage = () => {
     }
 
     return (
-        <main ref={pageRef} className="min-h-screen bg-[#0A0A0A] text-white px-4 py-8 sm:px-6 lg:px-8 font-sans">
+        <main ref={pageRef} className="min-h-screen text-white px-4 py-8 sm:px-6 lg:px-8 font-sans">
             <div className="mx-auto max-w-7xl">
 
                 {/* Header & Stats */}

@@ -19,20 +19,9 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
 const DashboardPage = () => {
-  // const { user, logout } = useAuth()
-  // const navigate = useNavigate()
   const containerRef = useRef(null)
 
   const { data, isPending, isError, error, refetch } = useDashboard()
-
-  // Handles logout and redirects the user to the login page.
-  // const handleLogout = async () => {
-  //   try {
-  //     await logout()
-  //   } finally {
-  //     navigate('/login', { replace: true })
-  //   }
-  // }
 
   // Animate dashboard sections only after successful data loading.
   useGSAP(
@@ -83,11 +72,6 @@ const DashboardPage = () => {
       className="min-h-screen bg-slate-950 p-5 text-white sm:p-8"
     >
       <div className="mx-auto max-w-7xl">
-        {/* Dashboard header and logout action */}
-        {/* <DashboardHeader
-          user={user}
-          onLogout={handleLogout}
-        /> */}
 
         {/* Financial summary cards */}
         <FinancialOverview data={data} />
